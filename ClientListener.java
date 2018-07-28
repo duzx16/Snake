@@ -4,6 +4,7 @@ import socket.NumberUtil;
 import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class ClientListener implements DataListener {
@@ -43,7 +44,7 @@ public class ClientListener implements DataListener {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             output.write(NumberUtil.intToByte4(MessageType.Message.ordinal()));
-            output.write(text.getBytes());
+            output.write(text.getBytes("UTF-8"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -71,12 +72,7 @@ public class ClientListener implements DataListener {
             case Message:
                 byte[] message = new byte[data.length - 4];
                 System.arraycopy(data, 4, message, 0, data.length - 4);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        _parent.chat_text.append("Server:\n\t" + new String(message) + "\n");
-                    }
-                });
+                SwingUtilities.invokeLater(() -> _parent.chat_text.append("Server:\n  " + new String(message, Charset.forName("UTF-8")) + "\n"));
                 break;
             case Process:
                 synchronized (_parent.stepper._count) {
