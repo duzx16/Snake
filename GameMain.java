@@ -1,7 +1,6 @@
 import imageio.SVGImageReader;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
+import javafx.scene.media.AudioClip;
 
 import socket.ReceiveThread;
 import socket.SendThread;
@@ -119,8 +118,9 @@ public class GameMain extends JFrame {
             super("Music", new ImageIcon(icon));
             _fileChooser = new JFileChooser(".");
             try {
-                _music = Applet.newAudioClip(new File("sound/background.mp3").toURI().toURL());
-                _music.loop();
+                _music = new AudioClip(new File("sound/background.mp3").toURI().toURL().toString());
+                _music.setCycleCount(AudioClip.INDEFINITE);
+                _music.play();
             } catch (MalformedURLException error) {
                 System.out.println(error.getMessage());
             }
@@ -134,11 +134,12 @@ public class GameMain extends JFrame {
                         _music.stop();
                     }
                     try {
-                        _music = Applet.newAudioClip(file.toURI().toURL());
+                        _music = new AudioClip(file.toURI().toURL().toString());
                     } catch (MalformedURLException error) {
                         System.out.println(error.getMessage());
                     }
-                    _music.loop();
+                    _music.setCycleCount(AudioClip.INDEFINITE);
+                    _music.play();
                 } else {
                     JOptionPane.showMessageDialog(GameMain.this, "The file doesn't exist");
                 }
