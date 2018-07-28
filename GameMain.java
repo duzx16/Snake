@@ -1,5 +1,8 @@
 import imageio.SVGImageReader;
-import javafx.scene.media.AudioClip;
+
+import java.applet.Applet;
+import java.applet.AudioClip;
+
 import socket.ReceiveThread;
 import socket.SendThread;
 
@@ -116,9 +119,8 @@ public class GameMain extends JFrame {
             super("Music", new ImageIcon(icon));
             _fileChooser = new JFileChooser(".");
             try {
-                _music = new AudioClip(new File("sound/background.mp3").toURI().toURL().toString());
-                _music.setCycleCount(AudioClip.INDEFINITE);
-                _music.play();
+                _music = Applet.newAudioClip(new File("sound/background.mp3").toURI().toURL());
+                _music.loop();
             } catch (MalformedURLException error) {
                 System.out.println(error.getMessage());
             }
@@ -132,12 +134,11 @@ public class GameMain extends JFrame {
                         _music.stop();
                     }
                     try {
-                        _music = new AudioClip(file.toURI().toURL().toString());
+                        _music = Applet.newAudioClip(file.toURI().toURL());
                     } catch (MalformedURLException error) {
                         System.out.println(error.getMessage());
                     }
-                    _music.setCycleCount(AudioClip.INDEFINITE);
-                    _music.play();
+                    _music.loop();
                 } else {
                     JOptionPane.showMessageDialog(GameMain.this, "The file doesn't exist");
                 }
@@ -251,6 +252,7 @@ public class GameMain extends JFrame {
         GameLogic.initSnake(1, data);
         data.snake_nums[0] = data.snake_nums[1] = 5;
         data.scores[0] = data.scores[1] = 0;
+        data.is_lives[0] = data.is_lives[1] = true;
     }
 
     // todo 暂停和恢复实现在线版本
