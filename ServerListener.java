@@ -23,6 +23,7 @@ public class ServerListener implements DataListener {
     public void connectStop(IOException error) {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
+            _parent.disconnectGame();
             _parent.gameOver();
         });
     }
@@ -33,6 +34,17 @@ public class ServerListener implements DataListener {
             _parent.sendBuffer.add(data);
             _parent.sendBuffer.notify();
         }
+    }
+
+    public void sendPause(int not_self) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            output.write(NumberUtil.intToByte4(MessageType.Pause.ordinal()));
+            output.write(NumberUtil.intToByte4(not_self));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        send(output.toByteArray());
     }
 
     public void sendChatData(String text) {
@@ -69,6 +81,20 @@ public class ServerListener implements DataListener {
             case Speed:
                 int speed = input.nextInt();
                 SwingUtilities.invokeLater(() -> _parent.speed_slider.setValue(speed));
+                break;
+            case Pause:
+                int pause = input.nextInt();
+                if (pause < 2) {
+                    sendPause(1);
+                    SwingUtilities.invokeLater(() -> {
+                        _parent.ui.pause_text = "对方已暂停游戏";
+                        _parent.pauseGame();
+                    });
+
+                } else {
+                    sendPause(2);
+                    _parent.continueGame();
+                }
         }
     }
 

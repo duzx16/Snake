@@ -21,6 +21,14 @@ public class ClientListener implements DataListener {
         }
     }
 
+    public void connectStop(IOException error) {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
+            _parent.disconnectGame();
+            _parent.gameOver();
+        });
+    }
+
     public void sendSpeedData(int speed) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -32,11 +40,26 @@ public class ClientListener implements DataListener {
         send(output.toByteArray());
     }
 
-    public void connectStop(IOException error) {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
-            _parent.gameOver();
-        });
+    public void sendContinue() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            output.write(NumberUtil.intToByte4(MessageType.Pause.ordinal()));
+            output.write(NumberUtil.intToByte4(2));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        send(output.toByteArray());
+    }
+
+    public void sendPause() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            output.write(NumberUtil.intToByte4(MessageType.Pause.ordinal()));
+            output.write(NumberUtil.intToByte4(1));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        send(output.toByteArray());
     }
 
 
@@ -179,6 +202,21 @@ public class ClientListener implements DataListener {
                 _parent.setContentPane(_parent.game_panel);
                 _parent.validate();
                 break;
+            case Pause:
+                int pause = input.nextInt();
+                if (pause == 1) {
+                    SwingUtilities.invokeLater(() -> {
+                        _parent.ui.pause_text = "游戏已暂停";
+                        _parent.pauseGame();
+                    });
+                } else if (pause == 0) {
+                    SwingUtilities.invokeLater(() -> {
+                        _parent.ui.pause_text = "对方已暂停游戏";
+                        _parent.pauseGame();
+                    });
+                } else {
+                    SwingUtilities.invokeLater(() -> _parent.continueGame());
+                }
         }
     }
 }

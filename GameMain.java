@@ -51,7 +51,7 @@ public class GameMain extends JFrame {
 
     class StartAction extends AbstractAction {
         StartAction(Image icon) {
-            super("Start", new ImageIcon(icon));
+            super("", new ImageIcon(icon));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -66,7 +66,13 @@ public class GameMain extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            pauseGame();
+            if (is_server_mode()) {
+                serverListener.sendPause(0);
+                ui.pause_text = "游戏已暂停";
+                pauseGame();
+            } else {
+                clientListener.sendPause();
+            }
         }
     }
 
@@ -77,7 +83,12 @@ public class GameMain extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            continueGame();
+            if (is_server_mode()) {
+                serverListener.sendPause(2);
+                continueGame();
+            } else {
+                clientListener.sendContinue();
+            }
         }
     }
 
@@ -165,8 +176,17 @@ public class GameMain extends JFrame {
         }
         JButton start_button = new JButton(startAction);
         start_button.setFocusable(false);
-        net_ui = new NetUI();
+        start_button.setContentAreaFilled(false);
+        start_button.setBorderPainted(false);
 
+        net_ui = new NetUI();
+        net_ui.setOpaque(false);
+        start_ui.setLayout(new GridLayout(3, 2));
+        for(int i =0;i<4;++i){
+            JPanel panel = new JPanel();
+            panel.setOpaque(false);
+            start_ui.add(panel);
+        }
         start_ui.add(start_button);
         start_ui.add(net_ui);
 
@@ -273,30 +293,38 @@ public class GameMain extends JFrame {
         ui.repaint();
     }
 
-    // todo 游戏结束时的断开连接和停止收发
     void gameOver() {
         stepper.stepPause();
-        sendThread.exit = true;
-        receiveThread.exit = true;
-        sendThread.interrupt();
-        receiveThread.interrupt();
-        try {
-            _socket.close();
-            if (_server_mode)
-                _server.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
         saveRecord();
         JOptionPane.showMessageDialog(this, String.format("Game Over\n龙虎榜\n1.%d\n2.%d\n3.%d\n4.%d\n5.%d\n", _records[0], _records[1], _records[2], _records[3], _records[4]));
         setContentPane(start_ui);
+        startAction.setEnabled(true);
         validate();
     }
 
-    // todo 实现等待连接时的画面
+    void disconnectGame() {
+        if (sendThread != null) {
+            sendThread.exit = true;
+            sendThread.interrupt();
+        }
+        if (receiveThread != null) {
+            receiveThread.exit = true;
+            receiveThread.interrupt();
+        }
+        if (_socket != null) {
+            try {
+                _socket.close();
+                if (_server_mode)
+                    _server.close();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     void connectGame() {
         try {
+            disconnectGame();
             int port = Integer.parseInt(net_ui.port_field.getText());
             InetAddress addr = InetAddress.getByName(net_ui.ip_field.getText());
             if (net_ui.server_button.isSelected()) {
@@ -305,6 +333,7 @@ public class GameMain extends JFrame {
                 _server_mode = false;
             }
             new ConnectThread(addr, port).start();
+            startAction.setEnabled(false);
 
         } catch (IOException error) {
             JOptionPane.showMessageDialog(this, "该IP地址不存在");
@@ -317,6 +346,7 @@ public class GameMain extends JFrame {
 
     void connectError(Exception e) {
         JOptionPane.showMessageDialog(this, e.getMessage() + "\n连接失败，请重试");
+        startAction.setEnabled(true);
     }
 
     void startGame() {
