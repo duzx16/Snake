@@ -2,6 +2,7 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import imageio.SVGImageReader;
 
 public class MainUI extends JPanel {
     private Image _background, _hole, _stone;
-    private Image[] _wall_edges = new Image[4], _wall_middles = new Image[4], _wall_trans = new Image[4], _snake_heads = new Image[4], _snake_tails = new Image[4], _snake_middles = new Image[4], _snake_trans = new Image[4];
+    private Image[] _wall_edges = new Image[4], _wall_middles = new Image[4], _wall_trans = new Image[4];
+    private BufferedImage[][] _snake_heads = new BufferedImage[2][4], _snake_tails = new BufferedImage[2][4], _snake_middles = new BufferedImage[2][4], _snake_trans = new BufferedImage[2][4];
     private Image[] _food_images = new Image[5];
     private GameData _data;
     private double _unit_x, _unit_y;
@@ -34,10 +36,14 @@ public class MainUI extends JPanel {
                 _wall_edges[i] = ImageRender.rotateImage(_wall_edge, i * 90);
                 _wall_trans[i] = ImageRender.rotateImage(_wall_tran, i * 90);
                 _wall_middles[i] = ImageRender.rotateImage(_wall_middle, i * 90);
-                _snake_heads[i] = ImageRender.rotateImage(_snake_head, i * 90);
-                _snake_tails[i] = ImageRender.rotateImage(_snake_tail, i * 90);
-                _snake_trans[i] = ImageRender.rotateImage(_snake_tran, i * 90);
-                _snake_middles[i] = ImageRender.rotateImage(_snake_middle, i * 90);
+                _snake_heads[0][i] = ImageRender.rotateImage(_snake_head, i * 90);
+                _snake_tails[0][i] = ImageRender.rotateImage(_snake_tail, i * 90);
+                _snake_trans[0][i] = ImageRender.rotateImage(_snake_tran, i * 90);
+                _snake_middles[0][i] = ImageRender.rotateImage(_snake_middle, i * 90);
+                _snake_heads[1][i] = ImageRender.inverseImage(_snake_heads[0][i]);
+                _snake_tails[1][i] = ImageRender.inverseImage(_snake_tails[0][i]);
+                _snake_trans[1][i] = ImageRender.inverseImage(_snake_trans[0][i]);
+                _snake_middles[1][i] = ImageRender.inverseImage(_snake_middles[0][i]);
             }
             _food_images[0] = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/apple.svg")));
             _food_images[1] = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/banana.svg")));
@@ -60,8 +66,8 @@ public class MainUI extends JPanel {
         paintFoods(_data.foods, g);
         paintHoles(_data.holes, g);
         paintSingles(_data.stones, _stone, g);
-        paintSnake(_data.snakes[0], g);
-        paintSnake(_data.snakes[1], g);
+        paintSnake(0, g);
+        paintSnake(1, g);
         g.setColor(new Color(30, 30, 30, 200));
         if (is_pause) {
             g.fillRect(0, 0, getWidth(), getHeight());
@@ -151,7 +157,8 @@ public class MainUI extends JPanel {
         }
     }
 
-    private void paintSnake(Snake snake, Graphics g) {
+    private void paintSnake(int index, Graphics g) {
+        Snake snake = _data.snakes[index];
         Point dir, old_dir = new Point(), pos = snake.body.elementAt(0);
         for (int i = 1; i <= snake.body.size(); i++) {
             if (i == snake.body.size()) {
@@ -162,18 +169,18 @@ public class MainUI extends JPanel {
             int ui_x = (int) (pos.x * _unit_x) - 1, ui_y = (int) (pos.y * _unit_y) - 1;
             if (i == 1) {
                 if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                    g.drawImage(_snake_heads[dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                    g.drawImage(_snake_heads[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
                 pos = pos.add(snake.body.elementAt(i));
             } else if (i == snake.body.size()) {
                 if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                    g.drawImage(_snake_tails[dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                    g.drawImage(_snake_tails[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
             } else {
                 if (dir.equalTo(old_dir)) {
                     if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                        g.drawImage(_snake_middles[dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                        g.drawImage(_snake_middles[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
                 } else {
                     if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE) {
-                        g.drawImage(_snake_trans[dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                        g.drawImage(_snake_trans[index][dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
                     }
                 }
                 pos = pos.add(snake.body.elementAt(i));

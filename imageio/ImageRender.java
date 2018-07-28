@@ -21,4 +21,23 @@ public class ImageRender {
         return img;
     }
 
+    public static BufferedImage inverseImage(BufferedImage imgsrc) {
+        try {
+            //创建一个不带透明度的图片
+            BufferedImage back = new BufferedImage(imgsrc.getWidth(), imgsrc.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            int width = imgsrc.getWidth();
+            int height = imgsrc.getHeight();
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int pixel = imgsrc.getRGB(j, i);
+                    back.setRGB(j, i,  pixel & 0xFFFF00FF);
+                }
+            }
+            return back;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
