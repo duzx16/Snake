@@ -255,6 +255,9 @@ class GameLogic {
         hole.used = true;
         data.snakes[index].body.addFirst(hole.pos);
         data.dirs[index] = GameLogic.randomDir(data.map, hole.pos, new Point());
+        if (data.dirs[index] == null) {
+            data.dirs[index] = Dir.UP;
+        }
         Point stay = new Point();
         for (int j = 1; j < data.snakes[index].length; j++) {
             data.snakes[index].body.addLast(stay);

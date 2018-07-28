@@ -50,10 +50,13 @@ class GameStepper implements ActionListener, ChangeListener {
                 if (_main.data.snakes[i].state == Snake.State.IN) {
                     _main.data.snakes[i].hole_wait += 1;
                     if (_main.data.snakes[i].hole_wait >= food_wait_total) {
+                        _main.data.snakes[i].hole_wait = 0;
                         int hole_index = GameLogic.randomHole(_main.data.holes);
                         Hole selected_hole = _main.data.holes.get(hole_index);
-                        _main.serverListener.snake_holes[i] = hole_index;
-                        GameLogic.snakeOut(i, _main.data, selected_hole);
+                        if (selected_hole != null) {
+                            _main.serverListener.snake_holes[i] = hole_index;
+                            GameLogic.snakeOut(i, _main.data, selected_hole);
+                        }
                     }
                 }
                 if (_count.getNum() % _speed == 0) {

@@ -23,8 +23,8 @@ public class ClientListener implements DataListener {
 
     public void connectStop(IOException error) {
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
             _parent.disconnectGame();
+            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
             _parent.gameOver();
         });
     }

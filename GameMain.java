@@ -113,10 +113,10 @@ public class GameMain extends JFrame {
             text_input.setText("");
             if (is_server_mode()) {
                 serverListener.sendChatData(text);
-                chat_text.append("Server:\n\t" + text + "\n");
+                chat_text.append("Server:\n  " + text + "\n");
             } else {
                 clientListener.sendChatData(text);
-                chat_text.append("Client:\n\t" + text + "\n");
+                chat_text.append("Client:\n  " + text + "\n");
             }
         }
     }
@@ -182,7 +182,7 @@ public class GameMain extends JFrame {
         net_ui = new NetUI();
         net_ui.setOpaque(false);
         start_ui.setLayout(new GridLayout(3, 2));
-        for(int i =0;i<4;++i){
+        for (int i = 0; i < 4; ++i) {
             JPanel panel = new JPanel();
             panel.setOpaque(false);
             start_ui.add(panel);
@@ -267,7 +267,7 @@ public class GameMain extends JFrame {
         }
         GameLogic.initWalls(data.map, data.walls, 2);
         GameLogic.addFoods(data.map, data.foods, 2);
-        GameLogic.initHoles(data.map, data.holes, 2);
+        GameLogic.initHoles(data.map, data.holes, 4);
         GameLogic.initStones(data.map, data.stones, 5);
         GameLogic.initSnake(0, data);
         GameLogic.initSnake(1, data);
@@ -276,7 +276,6 @@ public class GameMain extends JFrame {
         data.is_lives[0] = data.is_lives[1] = true;
     }
 
-    // todo 暂停和恢复实现在线版本
     void pauseGame() {
         stepper.stepPause();
         ui.is_pause = true;
