@@ -178,6 +178,7 @@ public class ClientListener implements DataListener {
                 GameLogic.initSnake(1, _parent.data);
                 _parent.data.snake_nums[0] = _parent.data.snake_nums[1] = 5;
                 _parent.data.scores[0] = _parent.data.scores[1] = 0;
+                _parent.data.is_lives[0] = _parent.data.is_lives[1] = true;
                 _parent.data.lock.writeLock().unlock();
                 _parent.setContentPane(_parent.game_panel);
                 _parent.validate();
