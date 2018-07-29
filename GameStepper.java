@@ -1,3 +1,5 @@
+import sun.util.resources.cldr.pa.CurrencyNames_pa;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -9,13 +11,13 @@ class GameStepper implements ActionListener, ChangeListener {
     final public Counter _count = new Counter();
     private int _food_wait = 0;
 
-    static int min_interval = 50, food_wait_total = 2000 / min_interval;
+    static int min_interval = 20, food_wait_total = 2000 / min_interval;
 
     public void setSpeed(int speed) {
         this._speed = speed;
     }
 
-    private int _speed = 2;
+    private int _speed = 10;
     private Timer _timer;
 
     public GameStepper(GameMain main) {
@@ -33,13 +35,23 @@ class GameStepper implements ActionListener, ChangeListener {
 
     public void stateChanged(ChangeEvent e) {
         if (_main.is_server_mode()) {
-            setSpeed(((JSlider) e.getSource()).getValue());
+            setSpeed(32 / ((JSlider) e.getSource()).getValue());
         } else {
             _main.clientListener.sendSpeedData(((JSlider) e.getSource()).getValue());
         }
     }
 
     public void actionPerformed(ActionEvent e) {
+        if (_count.getNum() % 2 == 0) {
+            synchronized (_main.maskLayer.plusList) {
+                for (int i = 0; i < _main.maskLayer.plusList.size(); i++) {
+                    _main.maskLayer.plusList.elementAt(i).y -= 1;
+                }
+                while (_main.maskLayer.plusList.size() > 0 && _main.maskLayer.plusList.elementAt(0).y < 1) {
+                    _main.maskLayer.plusList.clear();
+                }
+            }
+        }
         if (_main.is_server_mode()) {
             _main.data.lock.writeLock().lock();
             _main.data.snakes[0].moved = _main.data.snakes[1].moved = false;
@@ -70,9 +82,6 @@ class GameStepper implements ActionListener, ChangeListener {
                     _main.data.is_lives[i] = false;
                 }
             }
-            if (!(_main.data.is_lives[0] || _main.data.is_lives[1])) {
-                _main.gameOver();
-            }
             if (_main.data.foods.size() == 0) {
                 _food_wait += 1;
                 if (_food_wait == food_wait_total) {
@@ -82,9 +91,12 @@ class GameStepper implements ActionListener, ChangeListener {
             }
             _main.data.lock.writeLock().unlock();
             _main.serverListener.sendData();
-            _main.ui.repaint();
+            _main.game_layer.repaint();
             _main.statistics.repaint();
             _count.add();
+            if (!_main.data.is_lives[0] || !_main.data.is_lives[1]) {
+                _main.gameOver();
+            }
         } else {
             synchronized (_count) {
                 _count.add();

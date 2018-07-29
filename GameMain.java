@@ -20,18 +20,25 @@ public class GameMain extends JFrame {
     MainUI ui;
     // The UI of the main
     JPanel game_panel, statistics;
+    JLayer<JPanel> game_layer;
+    MaskLayer maskLayer;
     // The UI of the start
     JPanel start_ui;
     NetUI net_ui;
+    JLabel connect_label;
+    // The setting of the game
     GameData data;
     GameStepper stepper;
     AbstractAction pauseAction, continueAction, stopAction, musicAction, startAction;
     JSlider speed_slider;
+    int is_pause = 2;
     // 龙虎榜记录
     private int[] _records = new int[5];
     // 网络通信
     private ServerSocket _server;
     private Socket _socket;
+    private boolean _is_connecting = false;
+    private ConnectThread connectThread;
 
     public boolean is_server_mode() {
         return _server_mode;
@@ -55,7 +62,20 @@ public class GameMain extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            connectGame();
+            if (_is_connecting) {
+                if (connectThread != null && !connectThread.exit) {
+                    connectThread.exit = true;
+                    connectThread.interrupt();
+                }
+                connect_label.setText("当前无连接，点击Play按钮连接");
+                _is_connecting = false;
+            } else {
+                if(connectGame())
+                {
+                    connect_label.setText("正在连接中，点击Play按钮取消");
+                    _is_connecting = true;
+                }
+            }
         }
     }
 
@@ -68,7 +88,7 @@ public class GameMain extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (is_server_mode()) {
                 serverListener.sendPause(0);
-                ui.pause_text = "游戏已暂停";
+                is_pause = 0;
                 pauseGame();
             } else {
                 clientListener.sendPause();
@@ -182,23 +202,37 @@ public class GameMain extends JFrame {
         net_ui = new NetUI();
         net_ui.setOpaque(false);
         start_ui.setLayout(new GridLayout(3, 2));
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 2; ++i) {
             JPanel panel = new JPanel();
             panel.setOpaque(false);
             start_ui.add(panel);
         }
+        connect_label = new JLabel("", SwingConstants.CENTER);
+        connect_label.setHorizontalAlignment(SwingConstants.CENTER);
+        connect_label.setVerticalAlignment(SwingConstants.CENTER);
+        connect_label.setOpaque(false);
+        connect_label.setForeground(Color.WHITE);
+        connect_label.setFont(new Font("Yuanti SC", Font.BOLD, 20));
+        connect_label.setText("当前无连接，点击Play按钮连接");
+        start_ui.add(connect_label);
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        start_ui.add(panel);
         start_ui.add(start_button);
         start_ui.add(net_ui);
 
 
         game_panel = new JPanel();
         game_panel.setLayout(new BorderLayout());
-        game_panel.add(ui, BorderLayout.CENTER);
+        maskLayer = new MaskLayer(this);
+        GameLogic._parent = this;
+        game_layer = new JLayer<>(ui, maskLayer);
+        game_panel.add(game_layer, BorderLayout.CENTER);
 
         // Initialize the toolBar
         JToolBar toolBar = new JToolBar();
         // The slider
-        speed_slider = new JSlider(1, 10, 2);
+        speed_slider = new JSlider(2, 16, 8);
         speed_slider.addChangeListener(stepper);
         toolBar.add(speed_slider);
 
@@ -253,6 +287,7 @@ public class GameMain extends JFrame {
         });
         toolBar.addKeyListener(key_controller);
         speed_slider.addKeyListener(key_controller);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(750, 750);
         setVisible(true);
@@ -278,7 +313,6 @@ public class GameMain extends JFrame {
 
     void pauseGame() {
         stepper.stepPause();
-        ui.is_pause = true;
         continueAction.setEnabled(true);
         pauseAction.setEnabled(false);
         ui.repaint();
@@ -286,7 +320,6 @@ public class GameMain extends JFrame {
 
     void continueGame() {
         stepper.stepStart();
-        ui.is_pause = false;
         continueAction.setEnabled(false);
         pauseAction.setEnabled(true);
         ui.repaint();
@@ -295,9 +328,18 @@ public class GameMain extends JFrame {
     void gameOver() {
         stepper.stepPause();
         saveRecord();
-        JOptionPane.showMessageDialog(this, String.format("Game Over\n龙虎榜\n1.%d\n2.%d\n3.%d\n4.%d\n5.%d\n", _records[0], _records[1], _records[2], _records[3], _records[4]));
+        String result;
+        if (data.is_lives[0] ^ data.is_lives[1]) {
+            if (is_server_mode() ^ data.is_lives[0]) {
+                result = "对方获胜\n";
+            } else {
+                result = "你获胜了\n";
+            }
+        } else {
+            result = "平局\n";
+        }
+        JOptionPane.showMessageDialog(this, String.format(result + "龙虎榜\n1.%d\n2.%d\n3.%d\n4.%d\n5.%d\n", _records[0], _records[1], _records[2], _records[3], _records[4]));
         setContentPane(start_ui);
-        startAction.setEnabled(true);
         validate();
     }
 
@@ -321,7 +363,7 @@ public class GameMain extends JFrame {
         }
     }
 
-    void connectGame() {
+    boolean connectGame() {
         try {
             disconnectGame();
             int port = Integer.parseInt(net_ui.port_field.getText());
@@ -331,13 +373,16 @@ public class GameMain extends JFrame {
             } else {
                 _server_mode = false;
             }
-            new ConnectThread(addr, port).start();
-            startAction.setEnabled(false);
+            connectThread = new ConnectThread(addr, port);
+            connectThread.start();
+            return true;
 
         } catch (IOException error) {
             JOptionPane.showMessageDialog(this, "该IP地址不存在");
+            return false;
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(this, "端口号错误");
+            return false;
         }
 
 
@@ -345,10 +390,13 @@ public class GameMain extends JFrame {
 
     void connectError(Exception e) {
         JOptionPane.showMessageDialog(this, e.getMessage() + "\n连接失败，请重试");
-        startAction.setEnabled(true);
+        connect_label.setText("当前无连接，点击Play按钮连接");
+        _is_connecting = false;
     }
 
     void startGame() {
+        _is_connecting = false;
+        connect_label.setText("当前无连接，点击Play按钮连接");
         chat_text.setText("");
         sendBuffer.clear();
         if (_server_mode) {
@@ -358,7 +406,6 @@ public class GameMain extends JFrame {
             receiveThread = new ReceiveThread(_socket, clientListener);
             sendThread = new SendThread(_socket, sendBuffer, clientListener);
         }
-
         receiveThread.start();
         sendThread.start();
         if (_server_mode) {
@@ -422,6 +469,7 @@ public class GameMain extends JFrame {
     }
 
     class ConnectThread extends Thread {
+        public volatile boolean exit = false;
         private InetAddress _addr;
         private int _port;
 
@@ -433,11 +481,21 @@ public class GameMain extends JFrame {
         public void run() {
             if (_server_mode) {
                 try {
+                    if (_server != null) {
+                        try {
+                            _server.close();
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
                     _server = new ServerSocket(_port, 1, _addr);
                     _socket = _server.accept();
                     startGame();
                 } catch (IOException e) {
-                    connectError(e);
+                    if (!exit) {
+                        exit = true;
+                        connectError(e);
+                    }
                 }
             } else {
                 try {
@@ -445,7 +503,10 @@ public class GameMain extends JFrame {
                     _socket.connect(new InetSocketAddress(_addr, _port), 0);
                     startGame();
                 } catch (IOException e) {
-                    connectError(e);
+                    if (!exit) {
+                        exit = true;
+                        connectError(e);
+                    }
                 }
 
             }

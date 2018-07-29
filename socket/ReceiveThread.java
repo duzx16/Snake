@@ -33,7 +33,6 @@ public class ReceiveThread extends Thread {
         return buffer;
     }
 
-    // todo 实现连接断开时的处理
     public void run() {
         while (!exit) {
             try {

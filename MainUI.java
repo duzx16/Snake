@@ -2,7 +2,6 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,9 +16,7 @@ public class MainUI extends JPanel {
     private BufferedImage[][] _snake_heads = new BufferedImage[2][4], _snake_tails = new BufferedImage[2][4], _snake_middles = new BufferedImage[2][4], _snake_trans = new BufferedImage[2][4];
     private Image[] _food_images = new Image[5];
     private GameData _data;
-    private double _unit_x, _unit_y;
-    boolean is_pause = false;
-    String pause_text = "游戏暂停";
+    double unit_x, unit_y;
 
     MainUI(GameData data) {
         _data = data;
@@ -59,8 +56,8 @@ public class MainUI extends JPanel {
 
     public void paintComponent(Graphics g) {
         _data.lock.readLock().lock();
-        _unit_x = (double) getWidth() / GameData.MAP_WIDTH;
-        _unit_y = (double) getHeight() / GameData.MAP_HEIGHT;
+        unit_x = (double) getWidth() / GameData.MAP_WIDTH;
+        unit_y = (double) getHeight() / GameData.MAP_HEIGHT;
         g.drawImage(_background, 0, 0, getWidth(), getHeight(), null);
         paintWalls(_data.walls, g);
         paintFoods(_data.foods, g);
@@ -68,18 +65,11 @@ public class MainUI extends JPanel {
         paintSingles(_data.stones, _stone, g);
         paintSnake(0, g);
         paintSnake(1, g);
-        g.setColor(new Color(30, 30, 30, 200));
-        if (is_pause) {
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.setFont(new Font("Yuanti SC", Font.BOLD, 40));
-            g.setColor(Color.WHITE);
-            g.drawString(pause_text, getWidth() / 2, getHeight() / 2);
-        }
 
 //        for (int i = 0; i < GameData.MAP_WIDTH; i++) {
 //            for (int j = 0; j < GameData.MAP_HEIGHT; j++) {
 //                g.setColor(Color.BLACK);
-//                g.drawRect((int)(i * _unit_x), (int)(j * _unit_y), (int)(_unit_x), (int)(_unit_y));
+//                g.drawRect((int)(i * unit_x), (int)(j * unit_y), (int)(unit_x), (int)(unit_y));
 //                switch (_data.map.elementAt(i, j).type){
 //                    case SNAKE:
 //                        g.setColor(Color.RED);
@@ -100,7 +90,7 @@ public class MainUI extends JPanel {
 //                        g.setColor(Color.WHITE);
 //                        break;
 //                }
-//                g.fillRect((int)(i * _unit_x), (int)(j * _unit_y), (int)(_unit_x), (int)(_unit_y));
+//                g.fillRect((int)(i * unit_x), (int)(j * unit_y), (int)(unit_x), (int)(unit_y));
 //            }
 //        }
         _data.lock.readLock().unlock();
@@ -140,16 +130,16 @@ public class MainUI extends JPanel {
                 } else {
                     dir = wall.get(i).sub(pos);
                 }
-                int ui_x = (int) (pos.x * _unit_x) - 1, ui_y = (int) (pos.y * _unit_y) - 1;
+                int ui_x = (int) (pos.x * unit_x) - 1, ui_y = (int) (pos.y * unit_y) - 1;
                 if (i == 1) {
-                    g.drawImage(_wall_edges[dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 3, (int) _unit_y + 3, null);
+                    g.drawImage(_wall_edges[dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 3, (int) unit_y + 3, null);
                 } else if (i == wall.size()) {
-                    g.drawImage(_wall_edges[(dirToAngle(dir) + 2) % 4], ui_x, ui_y, (int) _unit_x + 3, (int) _unit_y + 3, null);
+                    g.drawImage(_wall_edges[(dirToAngle(dir) + 2) % 4], ui_x, ui_y, (int) unit_x + 3, (int) unit_y + 3, null);
                 } else {
                     if (dir.equalTo(old_dir)) {
-                        g.drawImage(_wall_middles[dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 3, (int) _unit_y + 3, null);
+                        g.drawImage(_wall_middles[dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 3, (int) unit_y + 3, null);
                     } else {
-                        g.drawImage(_wall_trans[dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) _unit_x + 3, (int) _unit_y + 3, null);
+                        g.drawImage(_wall_trans[dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) unit_x + 3, (int) unit_y + 3, null);
                     }
                 }
                 old_dir = dir;
@@ -157,7 +147,7 @@ public class MainUI extends JPanel {
         }
     }
 
-    private void paintSnake(int index, Graphics g) {
+    void paintSnake(int index, Graphics g) {
         Snake snake = _data.snakes[index];
         Point dir, old_dir = new Point(), pos = snake.body.elementAt(0);
         for (int i = 1; i <= snake.body.size(); i++) {
@@ -166,21 +156,21 @@ public class MainUI extends JPanel {
             } else {
                 dir = snake.body.elementAt(i);
             }
-            int ui_x = (int) (pos.x * _unit_x) - 1, ui_y = (int) (pos.y * _unit_y) - 1;
+            int ui_x = (int) (pos.x * unit_x) - 1, ui_y = (int) (pos.y * unit_y) - 1;
             if (i == 1) {
                 if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                    g.drawImage(_snake_heads[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                    g.drawImage(_snake_heads[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
                 pos = pos.add(snake.body.elementAt(i));
             } else if (i == snake.body.size()) {
                 if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                    g.drawImage(_snake_tails[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                    g.drawImage(_snake_tails[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
             } else {
                 if (dir.equalTo(old_dir)) {
                     if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
-                        g.drawImage(_snake_middles[index][dirToAngle(dir)], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                        g.drawImage(_snake_middles[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
                 } else {
                     if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE) {
-                        g.drawImage(_snake_trans[index][dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) _unit_x + 2, (int) _unit_y + 2, null);
+                        g.drawImage(_snake_trans[index][dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
                     }
                 }
                 pos = pos.add(snake.body.elementAt(i));
@@ -193,23 +183,23 @@ public class MainUI extends JPanel {
     private void paintFoods(ArrayList<Food> foods, Graphics g) {
         for (Food food :
                 foods) {
-            int ui_x = (int) (food.pos.x * _unit_x), ui_y = (int) (food.pos.y * _unit_y);
-            g.drawImage(_food_images[food.type.ordinal()], ui_x, ui_y, (int) _unit_x, (int) _unit_y, null);
+            int ui_x = (int) (food.pos.x * unit_x), ui_y = (int) (food.pos.y * unit_y);
+            g.drawImage(_food_images[food.type.ordinal()], ui_x, ui_y, (int) unit_x, (int) unit_y, null);
         }
     }
 
     private void paintSingles(ArrayList<Point> singles, Image img, Graphics g) {
         for (Point p :
                 singles) {
-            int ui_x = (int) (p.x * _unit_x), ui_y = (int) (p.y * _unit_y);
-            g.drawImage(img, ui_x, ui_y, (int) _unit_x, (int) _unit_y, null);
+            int ui_x = (int) (p.x * unit_x), ui_y = (int) (p.y * unit_y);
+            g.drawImage(img, ui_x, ui_y, (int) unit_x, (int) unit_y, null);
         }
     }
 
     private void paintHoles(ArrayList<Hole> holes, Graphics g) {
         for (Hole h : holes) {
-            int ui_x = (int) (h.pos.x * _unit_x), ui_y = (int) (h.pos.y * _unit_y);
-            g.drawImage(_hole, ui_x, ui_y, (int) _unit_x, (int) _unit_y, null);
+            int ui_x = (int) (h.pos.x * unit_x), ui_y = (int) (h.pos.y * unit_y);
+            g.drawImage(_hole, ui_x, ui_y, (int) unit_x, (int) unit_y, null);
         }
     }
 }

@@ -131,12 +131,12 @@ public class ClientListener implements DataListener {
                         _parent.data.is_lives[i] = false;
                     }
                 }
-                if (!(_parent.data.is_lives[0] || _parent.data.is_lives[1])) {
-                    _parent.gameOver();
-                }
                 _parent.data.lock.writeLock().unlock();
                 _parent.ui.repaint();
                 _parent.statistics.repaint();
+                if (!_parent.data.is_lives[0] || !_parent.data.is_lives[1]) {
+                    _parent.gameOver();
+                }
                 break;
             case InitData:
                 _parent.data.lock.writeLock().lock();
@@ -206,15 +206,16 @@ public class ClientListener implements DataListener {
                 int pause = input.nextInt();
                 if (pause == 1) {
                     SwingUtilities.invokeLater(() -> {
-                        _parent.ui.pause_text = "游戏已暂停";
+                        _parent.is_pause = 1;
                         _parent.pauseGame();
                     });
                 } else if (pause == 0) {
                     SwingUtilities.invokeLater(() -> {
-                        _parent.ui.pause_text = "对方已暂停游戏";
+                        _parent.is_pause = 0;
                         _parent.pauseGame();
                     });
                 } else {
+                    _parent.is_pause = 2;
                     SwingUtilities.invokeLater(() -> _parent.continueGame());
                 }
         }

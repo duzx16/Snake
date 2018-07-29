@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 class GameLogic {
     private static Random _random = new Random(Calendar.getInstance().getTimeInMillis());
+    static GameMain _parent;
     static final Point[] _dir_pos = {new Point(0, -1), new Point(0, 1), new Point(-1, 0), new Point(1, 0)};
 
     static void killSnake(int index, GameData data) {
@@ -54,7 +55,6 @@ class GameLogic {
     }
 
     static Dir randomDir(GameMap map, Point pos, Point last_dir) {
-        float rand = _random.nextFloat();
         Dir[] choices = new Dir[4];
         int n = 0;
         for (int i = 0; i < 4; i++) {
@@ -108,6 +108,9 @@ class GameLogic {
         foods.clear();
         for (int i = 0; i < num; i++) {
             Point pos = randomSpare(map);
+            while (!neighborSpare(map, pos)) {
+                pos = randomSpare(map);
+            }
             int choice = _random.nextInt(Food.FoodType.values().length - 1);
             Food food = new Food(Food.FoodType.values()[choice], pos);
             map.elementAt(pos).type = MapEle.EleType.FOOD;
@@ -178,6 +181,9 @@ class GameLogic {
                             data.map.elementAt(head_pos).type = MapEle.EleType.SNAKE;
                             data.map.elementAt(head_pos).obj = snake;
                             data.scores[index] += 1;
+                            synchronized (_parent.maskLayer.plusList) {
+                                _parent.maskLayer.plusList.addFirst(new Point(head_pos.x, head_pos.y));
+                            }
                             break;
                         case WALL:
                         case STONE:

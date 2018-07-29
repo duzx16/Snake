@@ -87,12 +87,13 @@ public class ServerListener implements DataListener {
                 if (pause < 2) {
                     sendPause(1);
                     SwingUtilities.invokeLater(() -> {
-                        _parent.ui.pause_text = "对方已暂停游戏";
+                        _parent.is_pause = 1;
                         _parent.pauseGame();
                     });
 
                 } else {
                     sendPause(2);
+                    _parent.is_pause = 2;
                     _parent.continueGame();
                 }
         }
