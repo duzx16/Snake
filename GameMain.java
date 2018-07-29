@@ -47,6 +47,7 @@ public class GameMain extends JFrame {
     // The component for chat UI
     JTextArea chat_text;
     JTextField text_input;
+    JScrollPane chat_scroll;
 
     private boolean _server_mode;
     final ArrayList<byte[]> sendBuffer = new ArrayList<>();
@@ -70,8 +71,7 @@ public class GameMain extends JFrame {
                 connect_label.setText("当前无连接，点击Play按钮连接");
                 _is_connecting = false;
             } else {
-                if(connectGame())
-                {
+                if (connectGame()) {
                     connect_label.setText("正在连接中，点击Play按钮取消");
                     _is_connecting = true;
                 }
@@ -138,6 +138,10 @@ public class GameMain extends JFrame {
                 clientListener.sendChatData(text);
                 chat_text.append("Client:\n  " + text + "\n");
             }
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar bar = chat_scroll.getVerticalScrollBar();
+                bar.setValue(bar.getMaximum());
+            });
         }
     }
 
@@ -262,8 +266,13 @@ public class GameMain extends JFrame {
         chat_panel.setLayout(new BorderLayout());
         text_input = new JTextField(10);
         chat_text = new JTextArea();
+        chat_scroll = new JScrollPane(chat_text);
         chat_text.setEditable(false);
-        chat_panel.add(chat_text, BorderLayout.CENTER);
+        chat_text.setLineWrap(true);
+        chat_text.setWrapStyleWord(true);
+        chat_scroll.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        chat_panel.add(chat_scroll, BorderLayout.CENTER);
         JPanel input_panel = new JPanel();
         input_panel.add(text_input);
         input_panel.add(new JButton(new ChatAction()));
@@ -326,6 +335,7 @@ public class GameMain extends JFrame {
     }
 
     void gameOver() {
+        stopCommunicate();
         stepper.stepPause();
         saveRecord();
         String result;
@@ -368,7 +378,6 @@ public class GameMain extends JFrame {
     }
 
 
-
     boolean connectGame() {
         try {
             disconnectGame();
@@ -404,9 +413,11 @@ public class GameMain extends JFrame {
         chat_text.setText("");
         sendBuffer.clear();
         if (_server_mode) {
+            serverListener.listening = true;
             receiveThread = new ReceiveThread(_socket, serverListener);
             sendThread = new SendThread(_socket, sendBuffer, serverListener);
         } else {
+            clientListener.listening = true;
             receiveThread = new ReceiveThread(_socket, clientListener);
             sendThread = new SendThread(_socket, sendBuffer, clientListener);
         }

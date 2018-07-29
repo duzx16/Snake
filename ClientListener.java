@@ -7,26 +7,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-public class ClientListener implements DataListener {
-    private GameMain _parent;
+public class ClientListener extends GameListener {
 
     ClientListener(GameMain parent) {
-        _parent = parent;
-    }
-
-    private void send(byte[] data) {
-        synchronized (_parent.sendBuffer) {
-            _parent.sendBuffer.add(data);
-            _parent.sendBuffer.notify();
-        }
-    }
-
-    public synchronized void connectStop(IOException error) {
-        SwingUtilities.invokeLater(() -> {
-            _parent.stopCommunicate();
-            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
-            _parent.gameOver();
-        });
+        super(parent);
     }
 
     public void sendSpeedData(int speed) {
@@ -95,7 +79,13 @@ public class ClientListener implements DataListener {
             case Message:
                 byte[] message = new byte[data.length - 4];
                 System.arraycopy(data, 4, message, 0, data.length - 4);
-                SwingUtilities.invokeLater(() -> _parent.chat_text.append("Server:\n  " + new String(message, Charset.forName("UTF-8")) + "\n"));
+                SwingUtilities.invokeLater(() -> {
+                    _parent.chat_text.append("Server:\n  " + new String(message, Charset.forName("UTF-8")) + "\n");
+                });
+                SwingUtilities.invokeLater(() -> {
+                    JScrollBar bar = _parent.chat_scroll.getVerticalScrollBar();
+                    bar.setValue(bar.getMaximum());
+                });
                 break;
             case Process:
                 synchronized (_parent.stepper._count) {

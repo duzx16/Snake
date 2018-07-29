@@ -9,32 +9,17 @@ import java.util.ArrayList;
 
 enum MessageType {Message, Process, InitData, DirData, Pause, Speed}
 
-public class ServerListener implements DataListener {
+public class ServerListener extends GameListener {
 
-    private GameMain _parent;
+    volatile boolean listening = true;
     int[] snake_holes = {-1, -1};
     Dir[] snake_dirs = {Dir.NULL, Dir.NULL};
 
 
     ServerListener(GameMain main) {
-        _parent = main;
+        super(main);
     }
 
-    public synchronized void connectStop(IOException error) {
-        SwingUtilities.invokeLater(() -> {
-            _parent.stopCommunicate();
-            JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
-            _parent.gameOver();
-        });
-    }
-
-
-    private void send(byte[] data) {
-        synchronized (_parent.sendBuffer) {
-            _parent.sendBuffer.add(data);
-            _parent.sendBuffer.notify();
-        }
-    }
 
     public void sendPause(int not_self) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -76,7 +61,15 @@ public class ServerListener implements DataListener {
             case Message:
                 byte[] message = new byte[data.length - 4];
                 System.arraycopy(data, 4, message, 0, data.length - 4);
-                SwingUtilities.invokeLater(() -> _parent.chat_text.append("Server:\n  " + new String(message, Charset.forName("UTF-8")) + "\n"));
+                SwingUtilities.invokeLater(() -> {
+                    _parent.chat_text.append("Server:\n  " + new String(message, Charset.forName("UTF-8")) + "\n");
+                    JScrollBar bar = _parent.chat_scroll.getVerticalScrollBar();
+                    bar.setValue(bar.getMaximum());
+                });
+                SwingUtilities.invokeLater(() -> {
+                    JScrollBar bar = _parent.chat_scroll.getVerticalScrollBar();
+                    bar.setValue(bar.getMaximum());
+                });
                 break;
             case Speed:
                 int speed = input.nextInt();
