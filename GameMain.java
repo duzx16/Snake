@@ -343,7 +343,7 @@ public class GameMain extends JFrame {
         validate();
     }
 
-    void disconnectGame() {
+    void stopCommunicate() {
         if (sendThread != null) {
             sendThread.exit = true;
             sendThread.interrupt();
@@ -352,6 +352,10 @@ public class GameMain extends JFrame {
             receiveThread.exit = true;
             receiveThread.interrupt();
         }
+    }
+
+    void disconnectGame() {
+        stopCommunicate();
         if (_socket != null) {
             try {
                 _socket.close();
@@ -362,6 +366,8 @@ public class GameMain extends JFrame {
             }
         }
     }
+
+
 
     boolean connectGame() {
         try {
@@ -384,8 +390,6 @@ public class GameMain extends JFrame {
             JOptionPane.showMessageDialog(this, "端口号错误");
             return false;
         }
-
-
     }
 
     void connectError(Exception e) {
@@ -490,7 +494,7 @@ public class GameMain extends JFrame {
                     }
                     _server = new ServerSocket(_port, 1, _addr);
                     _socket = _server.accept();
-                    startGame();
+                    SwingUtilities.invokeLater(GameMain.this::startGame);
                 } catch (IOException e) {
                     if (!exit) {
                         exit = true;
@@ -501,7 +505,7 @@ public class GameMain extends JFrame {
                 try {
                     _socket = new Socket();
                     _socket.connect(new InetSocketAddress(_addr, _port), 0);
-                    startGame();
+                    SwingUtilities.invokeLater(GameMain.this::startGame);
                 } catch (IOException e) {
                     if (!exit) {
                         exit = true;

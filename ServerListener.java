@@ -20,9 +20,9 @@ public class ServerListener implements DataListener {
         _parent = main;
     }
 
-    public void connectStop(IOException error) {
+    public synchronized void connectStop(IOException error) {
         SwingUtilities.invokeLater(() -> {
-            _parent.disconnectGame();
+            _parent.stopCommunicate();
             JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
             _parent.gameOver();
         });
