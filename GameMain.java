@@ -335,7 +335,11 @@ public class GameMain extends JFrame {
     }
 
     void gameOver() {
-        stopCommunicate();
+        synchronized (sendBuffer) {
+            if(sendBuffer.isEmpty()){
+                stopCommunicate();
+            }
+        }
         stepper.stepPause();
         saveRecord();
         String result;
