@@ -358,6 +358,9 @@ public class GameMain extends JFrame {
     }
 
     void stopCommunicate() {
+        synchronized (sendBuffer){
+            sendBuffer.clear();
+        }
         if (sendThread != null) {
             sendThread.exit = true;
             sendThread.interrupt();
@@ -373,7 +376,7 @@ public class GameMain extends JFrame {
         if (_socket != null) {
             try {
                 _socket.close();
-                if (_server_mode)
+                if (_server != null)
                     _server.close();
             } catch (IOException e) {
                 System.out.println(e.getMessage());

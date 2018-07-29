@@ -26,6 +26,7 @@ public class GameListener implements DataListener {
         if (listening) {
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
+                _parent.disconnectGame();
                 _parent.gameOver();
                 listening = false;
             });
