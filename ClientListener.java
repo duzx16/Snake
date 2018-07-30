@@ -98,6 +98,7 @@ public class ClientListener extends GameListener {
                         GameLogic.snakeOut(i, _parent.data, _parent.data.holes.get(selected));
                     }
                 }
+                _parent.data.snakes[0].moved = _parent.data.snakes[1].moved = false;
                 for (int i = 0; i < 2; i++) {
                     Dir dir = Dir.values()[input.nextInt()];
                     if (dir != Dir.NULL) {
@@ -185,7 +186,7 @@ public class ClientListener extends GameListener {
                 }
                 GameLogic.initSnake(0, _parent.data);
                 GameLogic.initSnake(1, _parent.data);
-                _parent.data.snake_nums[0] = _parent.data.snake_nums[1] = 5;
+                _parent.data.snake_nums[0] = _parent.data.snake_nums[1] = 20;
                 _parent.data.scores[0] = _parent.data.scores[1] = 0;
                 _parent.data.is_lives[0] = _parent.data.is_lives[1] = true;
                 _parent.data.lock.writeLock().unlock();

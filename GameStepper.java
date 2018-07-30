@@ -9,9 +9,10 @@ import java.awt.event.ActionListener;
 class GameStepper implements ActionListener, ChangeListener {
     private GameMain _main;
     final public Counter _count = new Counter();
+    private int plus_count = 0;
     private int _food_wait = 0;
 
-    static int min_interval = 20, food_wait_total = 2000 / min_interval;
+    static int min_interval = 20, food_wait_total = 2000 / min_interval / 5;
 
     public void setSpeed(int speed) {
         this._speed = speed;
@@ -35,14 +36,16 @@ class GameStepper implements ActionListener, ChangeListener {
 
     public void stateChanged(ChangeEvent e) {
         if (_main.is_server_mode()) {
-            setSpeed(32 / ((JSlider) e.getSource()).getValue());
+            setSpeed(16 / ((JSlider) e.getSource()).getValue());
         } else {
             _main.clientListener.sendSpeedData(((JSlider) e.getSource()).getValue());
         }
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (_count.getNum() % 2 == 0) {
+        plus_count += 1;
+        if (plus_count == 2) {
+            plus_count = 0;
             synchronized (_main.maskLayer.plusList) {
                 for (int i = 0; i < _main.maskLayer.plusList.size(); i++) {
                     _main.maskLayer.plusList.elementAt(i).y -= 1;
@@ -51,52 +54,56 @@ class GameStepper implements ActionListener, ChangeListener {
                     _main.maskLayer.plusList.clear();
                 }
             }
+            _main.maskLayer.repaint();
         }
+
         if (_main.is_server_mode()) {
-            _main.data.lock.writeLock().lock();
-            _main.data.snakes[0].moved = _main.data.snakes[1].moved = false;
-            for (int i = 0; i < 2; i++) {
-                if (!_main.data.is_lives[i]) {
-                    continue;
-                }
-                if (_main.data.snakes[i].state == Snake.State.IN) {
-                    _main.data.snakes[i].hole_wait += 1;
-                    if (_main.data.snakes[i].hole_wait >= food_wait_total) {
-                        _main.data.snakes[i].hole_wait = 0;
-                        int hole_index = GameLogic.randomHole(_main.data.holes);
-                        Hole selected_hole = _main.data.holes.get(hole_index);
-                        if (selected_hole != null) {
-                            _main.serverListener.snake_holes[i] = hole_index;
-                            GameLogic.snakeOut(i, _main.data, selected_hole);
+            if (_count.getNum() % 5 == 0) {
+                _main.data.lock.writeLock().lock();
+                _main.data.snakes[0].moved = _main.data.snakes[1].moved = false;
+                for (int i = 0; i < 2; i++) {
+                    if (!_main.data.is_lives[i]) {
+                        continue;
+                    }
+                    if (_main.data.snakes[i].state == Snake.State.IN) {
+                        _main.data.snakes[i].hole_wait += 1;
+                        if (_main.data.snakes[i].hole_wait >= food_wait_total) {
+                            _main.data.snakes[i].hole_wait = 0;
+                            int hole_index = GameLogic.randomHole(_main.data.holes);
+                            Hole selected_hole = _main.data.holes.get(hole_index);
+                            if (selected_hole != null) {
+                                _main.serverListener.snake_holes[i] = hole_index;
+                                GameLogic.snakeOut(i, _main.data, selected_hole);
+                            }
                         }
                     }
+                    if (_count.getNum() / 5 % _speed == 0) {
+                        _count.clear();
+                        GameLogic.snakeStep(i, _main.data, _main.data.dirs[i]);
+                        _main.serverListener.snake_dirs[i] = _main.data.dirs[i];
+                    }
                 }
-                if (_count.getNum() % _speed == 0) {
-                    _count.clear();
-                    GameLogic.snakeStep(i, _main.data, _main.data.dirs[i]);
-                    _main.serverListener.snake_dirs[i] = _main.data.dirs[i];
+                for (int i = 0; i < 2; i++) {
+                    if (_main.data.snake_nums[i] < 0) {
+                        _main.data.is_lives[i] = false;
+                    }
+                }
+                if (_main.data.foods.size() == 0) {
+                    _food_wait += 1;
+                    if (_food_wait == food_wait_total) {
+                        _food_wait = 0;
+                        GameLogic.addFoods(_main.data.map, _main.data.foods, 2);
+                    }
+                }
+                _main.data.lock.writeLock().unlock();
+                _main.serverListener.sendData();
+                _main.statistics.repaint();
+                _main.ui.repaint();
+                if (!_main.data.is_lives[0] || !_main.data.is_lives[1]) {
+                    _main.gameOver();
                 }
             }
-            for (int i = 0; i < 2; i++) {
-                if (_main.data.snake_nums[i] < 0) {
-                    _main.data.is_lives[i] = false;
-                }
-            }
-            if (_main.data.foods.size() == 0) {
-                _food_wait += 1;
-                if (_food_wait == food_wait_total) {
-                    _food_wait = 0;
-                    GameLogic.addFoods(_main.data.map, _main.data.foods, 2);
-                }
-            }
-            _main.data.lock.writeLock().unlock();
-            _main.serverListener.sendData();
-            _main.game_layer.repaint();
-            _main.statistics.repaint();
             _count.add();
-            if (!_main.data.is_lives[0] || !_main.data.is_lives[1]) {
-                _main.gameOver();
-            }
         } else {
             synchronized (_count) {
                 _count.add();

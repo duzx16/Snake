@@ -147,7 +147,7 @@ class GameLogic {
     }
 
     static void cutTail(GameMap map, Snake snake) {
-        if (map.elementAt(snake.tail).type == MapEle.EleType.SNAKE) {
+        if (map.elementAt(snake.tail).type == MapEle.EleType.SNAKE && map.elementAt(snake.tail).obj == snake) {
             map.elementAt(snake.tail).type = MapEle.EleType.NULL;
             map.elementAt(snake.tail).obj = null;
         } else if (map.elementAt(snake.tail).type == MapEle.EleType.HOLE) {
@@ -210,7 +210,8 @@ class GameLogic {
                                 else
                                     hit_dir = data.dirs[1];
                                 Point other_head = hit_snake.body.elementAt(0).add(_dir_pos[hit_dir.ordinal()]);
-                                if (data.map.elementAt(other_head).type == MapEle.EleType.FOOD) {
+                                other_head.bound();
+                                if (hit_snake.state == Snake.State.FREE && data.map.elementAt(other_head).type == MapEle.EleType.FOOD) {
                                     killSnake(index, data);
                                     break;
                                 }
@@ -229,14 +230,14 @@ class GameLogic {
                         case NULL:
                             snake.body.addFirst(head_pos);
                             snake.body.setElementAt(_dir_pos[dir.ordinal()].minus(), 1);
+                            cutTail(data.map, snake);
                             data.map.elementAt(head_pos).type = MapEle.EleType.SNAKE;
                             data.map.elementAt(head_pos).obj = snake;
-                            cutTail(data.map, snake);
                             break;
                     }
                     break;
                 case ENTER:
-                    if (data.map.elementAt(snake.tail).type == MapEle.EleType.SNAKE) {
+                    if (data.map.elementAt(snake.tail).type == MapEle.EleType.SNAKE && data.map.elementAt(snake.tail).obj == snake) {
                         data.map.elementAt(snake.tail).type = MapEle.EleType.NULL;
                         data.map.elementAt(snake.tail).obj = null;
                     }
