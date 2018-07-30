@@ -1,3 +1,4 @@
+import game_data.GameData;
 import imageio.SVGImageReader;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -10,7 +11,7 @@ public class StatisticsUI extends JPanel {
     private GameData _data;
     private Image _img;
 
-    StatisticsUI(GameData data) {
+    public StatisticsUI(GameData data) {
         _data = data;
         setPreferredSize(new Dimension(650, 60));
         try {

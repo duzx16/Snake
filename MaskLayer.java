@@ -1,10 +1,12 @@
 import javax.swing.*;
-import javax.swing.plaf.LayerUI;
 import java.awt.*;
+import game_data.Point;
+import game_data.MyDeque;
+import game_data.Snake;
 
 public class MaskLayer extends JPanel {
     private GameMain _parent;
-    final MyDeque plusList = new MyDeque(100);
+    public final MyDeque plusList = new MyDeque(100);
 
     MaskLayer(GameMain main) {
         super();

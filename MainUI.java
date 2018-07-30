@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import game_data.*;
+import game_data.Point;
 import imageio.ImageRender;
 import imageio.SVGImageReader;
 

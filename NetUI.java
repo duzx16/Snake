@@ -6,8 +6,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NetUI extends JPanel implements ActionListener {
-    JRadioButton server_button, client_button;
-    JTextField ip_field, port_field;
+    public JRadioButton server_button, client_button;
+    public JTextField ip_field, port_field;
 
     NetUI() {
         GridLayout layout = new GridLayout(4, 1);

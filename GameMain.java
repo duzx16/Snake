@@ -1,3 +1,5 @@
+import game_data.GameData;
+import game_data.MapEle;
 import imageio.SVGImageReader;
 
 import javafx.scene.media.AudioClip;
@@ -17,7 +19,7 @@ import javax.swing.*;
 
 public class GameMain extends JFrame {
     // The UI of the game
-    MainUI ui;
+    public MainUI ui;
     // The UI of the main
     JPanel game_panel, statistics;
     MaskLayer maskLayer;
@@ -26,11 +28,11 @@ public class GameMain extends JFrame {
     NetUI net_ui;
     JLabel connect_label;
     // The setting of the game
-    GameData data;
+    public GameData data;
     GameStepper stepper;
     AbstractAction pauseAction, continueAction, stopAction, musicAction, startAction;
     JSlider speed_slider;
-    int is_pause = 2;
+    public int is_pause = 2;
     // 龙虎榜记录
     private int[] _records = new int[5];
     // 网络通信

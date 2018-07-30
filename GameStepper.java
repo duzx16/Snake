@@ -1,3 +1,5 @@
+import game_data.Hole;
+import game_data.Snake;
 import sun.util.resources.cldr.pa.CurrencyNames_pa;
 
 import javax.swing.*;

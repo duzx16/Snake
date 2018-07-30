@@ -1,3 +1,5 @@
+import game_data.*;
+
 import javax.swing.*;
 import java.util.Calendar;
 import java.util.Random;

@@ -1,3 +1,7 @@
+import game_data.Dir;
+import game_data.Food;
+import game_data.Hole;
+import game_data.Point;
 import socket.DataListener;
 import socket.NumberUtil;
 
@@ -6,8 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
-enum MessageType {Message, Process, InitData, DirData, Pause, Speed}
 
 public class ServerListener extends GameListener {
 
