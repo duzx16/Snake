@@ -20,7 +20,6 @@ public class GameMain extends JFrame {
     MainUI ui;
     // The UI of the main
     JPanel game_panel, statistics;
-    JLayer<JPanel> game_layer;
     MaskLayer maskLayer;
     // The UI of the start
     JPanel start_ui;
@@ -105,6 +104,7 @@ public class GameMain extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (is_server_mode()) {
                 serverListener.sendPause(2);
+                is_pause = 2;
                 continueGame();
             } else {
                 clientListener.sendContinue();
@@ -228,15 +228,17 @@ public class GameMain extends JFrame {
 
         game_panel = new JPanel();
         game_panel.setLayout(new BorderLayout());
+        ui.setLayout(new BorderLayout());
         maskLayer = new MaskLayer(this);
+        maskLayer.setOpaque(false);
         GameLogic._parent = this;
-        game_layer = new JLayer<>(ui, maskLayer);
-        game_panel.add(game_layer, BorderLayout.CENTER);
+        ui.add(maskLayer, BorderLayout.CENTER);
+        game_panel.add(ui, BorderLayout.CENTER);
 
         // Initialize the toolBar
         JToolBar toolBar = new JToolBar();
         // The slider
-        speed_slider = new JSlider(2, 16, 8);
+        speed_slider = new JSlider(1, 16, 8);
         speed_slider.addChangeListener(stepper);
         toolBar.add(speed_slider);
 
@@ -315,7 +317,7 @@ public class GameMain extends JFrame {
         GameLogic.initStones(data.map, data.stones, 5);
         GameLogic.initSnake(0, data);
         GameLogic.initSnake(1, data);
-        data.snake_nums[0] = data.snake_nums[1] = 5;
+        data.snake_nums[0] = data.snake_nums[1] = 20;
         data.scores[0] = data.scores[1] = 0;
         data.is_lives[0] = data.is_lives[1] = true;
     }
