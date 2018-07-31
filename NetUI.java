@@ -15,8 +15,10 @@ public class NetUI extends JPanel implements ActionListener {
 
         server_button = new JRadioButton("以服务器模式运行");
         server_button.setForeground(Color.WHITE);
+        server_button.setOpaque(false);
         client_button = new JRadioButton("以客户端模式运行");
         client_button.setForeground(Color.WHITE);
+        client_button.setOpaque(false);
         server_button.addActionListener(this);
         client_button.addActionListener(this);
         ButtonGroup buttonGroup = new ButtonGroup();
