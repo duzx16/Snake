@@ -55,9 +55,12 @@ public class NetUI extends JPanel implements ActionListener {
             try {
                 InetAddress addr = InetAddress.getLocalHost();
                 ip_field.setText(addr.getHostAddress());
+                ip_field.setEditable(false);
             } catch (UnknownHostException error) {
                 System.out.println(error.getMessage());
             }
+        } else {
+            ip_field.setEditable(true);
         }
     }
 }

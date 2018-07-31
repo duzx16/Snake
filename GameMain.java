@@ -524,7 +524,7 @@ public class GameMain extends JFrame {
                             System.out.println(e.getMessage());
                         }
                     }
-                    _server = new ServerSocket(_port, 1, _addr);
+                    _server = new ServerSocket(_port);
                     _socket = _server.accept();
                     SwingUtilities.invokeLater(GameMain.this::startGame);
                 } catch (IOException e) {
