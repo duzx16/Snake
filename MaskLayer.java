@@ -6,7 +6,7 @@ import game_data.Point;
 import imageio.ImageManager;
 
 public class MaskLayer extends JPanel {
-    private final static int death_count_total = GameConstant.death_flash_delay / GameConstant.timer_interval;
+    private final static int death_count_total = GameConstants.death_flash_delay / GameConstants.timer_interval;
     private GameMain _parent;
     private double unit_x, unit_y;
     private final MyDeque<Point> plusList = new MyDeque<>(100);
@@ -17,7 +17,7 @@ public class MaskLayer extends JPanel {
         super();
         _parent = main;
         for (int i = 0; i < 2; ++i) {
-            snakes[i] = new MyDeque<>(GameConstant.map_height * GameConstant.map_width);
+            snakes[i] = new MyDeque<>(GameConstants.map_height * GameConstants.map_width);
         }
     }
 

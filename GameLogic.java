@@ -48,10 +48,10 @@ class GameLogic {
     }
 
     private static Point randomSpare(GameMap map) {
-        int x = _random.nextInt(GameConstant.map_width), y = _random.nextInt(GameConstant.map_height);
+        int x = _random.nextInt(GameConstants.map_width), y = _random.nextInt(GameConstants.map_height);
         while (map.elementAt(x, y).type != MapEle.EleType.NULL) {
-            x = _random.nextInt(GameConstant.map_width);
-            y = _random.nextInt(GameConstant.map_height);
+            x = _random.nextInt(GameConstants.map_width);
+            y = _random.nextInt(GameConstants.map_height);
         }
         return new Point(x, y);
     }
@@ -62,7 +62,7 @@ class GameLogic {
         for (int i = 0; i < 4; i++) {
             if (!_dir_pos[i].equalTo(last_dir)) {
                 Point new_pos = pos.add(_dir_pos[i]);
-                if (new_pos.x >= 0 && new_pos.x < GameConstant.map_width && new_pos.y >= 0 && new_pos.y < GameConstant.map_height && (map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD)) {
+                if (new_pos.x >= 0 && new_pos.x < GameConstants.map_width && new_pos.y >= 0 && new_pos.y < GameConstants.map_height && (map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD)) {
                     choices[n] = Dir.values()[i];
                     n++;
                 }
@@ -125,7 +125,7 @@ class GameLogic {
         holes.clear();
         for (int i = 0; i < num; i++) {
             Point pos = randomSpare(map);
-            while (!neighborSpare(map, pos) || pos.x == 0 || pos.x == GameConstant.map_width - 1 || pos.y == 0 || pos.y == GameConstant.map_height - 1) {
+            while (!neighborSpare(map, pos) || pos.x == 0 || pos.x == GameConstants.map_width - 1 || pos.y == 0 || pos.y == GameConstants.map_height - 1) {
                 pos = randomSpare(map);
             }
             Hole hole = new Hole(pos, false);

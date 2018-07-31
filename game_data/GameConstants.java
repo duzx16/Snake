@@ -1,10 +1,11 @@
 package game_data;
 
-public class GameConstant {
+public class GameConstants {
     // The game setting
     public static final int map_width = 30, map_height = 30;
     public static final int timer_interval = 20;
     public static final int min_game_interval = 5;
+    public static final int max_speed = 16, min_speed = 2, default_speed = 12;
     public static final int food_wait = 2000;
     public static final int hole_wait = 2000;
     // The connect setting

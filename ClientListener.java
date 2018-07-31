@@ -131,8 +131,8 @@ public class ClientListener extends GameListener {
                 break;
             case InitData:
                 _parent.data.lock.writeLock().lock();
-                for (int i = 0; i < GameConstant.map_width; i++) {
-                    for (int j = 0; j < GameConstant.map_height; j++) {
+                for (int i = 0; i < GameConstants.map_width; i++) {
+                    for (int j = 0; j < GameConstants.map_height; j++) {
                         _parent.data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null), i, j);
                     }
                 }

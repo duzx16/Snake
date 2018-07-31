@@ -1,7 +1,7 @@
 package game_data;
 
 public class GameMap {
-    private MapEle[][] _map = new MapEle[GameConstant.map_width][GameConstant.map_height];
+    private MapEle[][] _map = new MapEle[GameConstants.map_width][GameConstants.map_height];
 
     public MapEle elementAt(Point p) {
         return elementAt(p.x, p.y);

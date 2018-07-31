@@ -1,4 +1,4 @@
-import game_data.GameConstant;
+import game_data.GameConstants;
 import game_data.GameData;
 import game_data.MapEle;
 import imageio.ImageManager;
@@ -244,7 +244,7 @@ public class GameMain extends JFrame {
         // Initialize the toolBar
         JToolBar toolBar = new JToolBar();
         // The slider
-        speed_slider = new JSlider(1, 16, 8);
+        speed_slider = new JSlider(GameConstants.min_speed, GameConstants.max_speed, GameConstants.default_speed);
         speed_slider.addChangeListener(stepper);
         toolBar.add(speed_slider);
 
@@ -311,8 +311,8 @@ public class GameMain extends JFrame {
 
     // 初始化游戏数据
     void initGame() {
-        for (int i = 0; i < GameConstant.map_width; i++) {
-            for (int j = 0; j < GameConstant.map_height; j++) {
+        for (int i = 0; i < GameConstants.map_width; i++) {
+            for (int j = 0; j < GameConstants.map_height; j++) {
                 data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null), i, j);
             }
         }

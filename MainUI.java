@@ -19,8 +19,8 @@ public class MainUI extends JPanel {
 
     public void paintComponent(Graphics g) {
         _data.lock.readLock().lock();
-        unit_x = (double) getWidth() / GameConstant.map_width;
-        unit_y = (double) getHeight() / GameConstant.map_height;
+        unit_x = (double) getWidth() / GameConstants.map_width;
+        unit_y = (double) getHeight() / GameConstants.map_height;
         g.drawImage(ImageManager.background_image, 0, 0, getWidth(), getHeight(), null);
         paintWalls(_data.walls, g);
         paintFoods(_data.foods, g);
