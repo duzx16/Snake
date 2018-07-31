@@ -1,6 +1,6 @@
+import game_data.GameConstant;
 import game_data.Hole;
 import game_data.Snake;
-import sun.util.resources.cldr.pa.CurrencyNames_pa;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -10,11 +10,11 @@ import java.awt.event.ActionListener;
 
 class GameStepper implements ActionListener, ChangeListener {
     private GameMain _main;
-    final public Counter _count = new Counter();
+    final Counter _count = new Counter();
     private int plus_count = 0;
     private int _food_wait = 0;
 
-    static int min_interval = 20, food_wait_total = 2000 / min_interval / 5;
+    private static int min_interval = GameConstant.timer_interval, food_wait_total = GameConstant.food_wait / min_interval / GameConstant.min_game_interval, hole_wait_total = GameConstant.hole_wait / min_interval / GameConstant.min_game_interval;
 
     public void setSpeed(int speed) {
         this._speed = speed;
@@ -46,21 +46,15 @@ class GameStepper implements ActionListener, ChangeListener {
 
     public void actionPerformed(ActionEvent e) {
         plus_count += 1;
-        if (plus_count == 2) {
+        if (plus_count == GameConstant.plus_one_interval) {
             plus_count = 0;
-            synchronized (_main.maskLayer.plusList) {
-                for (int i = 0; i < _main.maskLayer.plusList.size(); i++) {
-                    _main.maskLayer.plusList.elementAt(i).y -= 1;
-                }
-                while (_main.maskLayer.plusList.size() > 0 && _main.maskLayer.plusList.elementAt(0).y < 1) {
-                    _main.maskLayer.plusList.clear();
-                }
-            }
-            _main.maskLayer.repaint();
+            _main.maskLayer.plusOneStep();
         }
+        _main.maskLayer.deathStep();
+        _main.maskLayer.repaint();
 
         if (_main.is_server_mode()) {
-            if (_count.getNum() % 5 == 0) {
+            if (_count.getNum() % GameConstant.min_game_interval == 0) {
                 _main.data.lock.writeLock().lock();
                 _main.data.snakes[0].moved = _main.data.snakes[1].moved = false;
                 for (int i = 0; i < 2; i++) {
@@ -69,7 +63,7 @@ class GameStepper implements ActionListener, ChangeListener {
                     }
                     if (_main.data.snakes[i].state == Snake.State.IN) {
                         _main.data.snakes[i].hole_wait += 1;
-                        if (_main.data.snakes[i].hole_wait >= food_wait_total) {
+                        if (_main.data.snakes[i].hole_wait >= hole_wait_total) {
                             _main.data.snakes[i].hole_wait = 0;
                             int hole_index = GameLogic.randomHole(_main.data.holes);
                             Hole selected_hole = _main.data.holes.get(hole_index);
@@ -79,7 +73,7 @@ class GameStepper implements ActionListener, ChangeListener {
                             }
                         }
                     }
-                    if (_count.getNum() / 5 % _speed == 0) {
+                    if (_count.getNum() / GameConstant.min_game_interval % _speed == 0) {
                         _count.clear();
                         GameLogic.snakeStep(i, _main.data, _main.data.dirs[i]);
                         _main.serverListener.snake_dirs[i] = _main.data.dirs[i];
@@ -109,7 +103,7 @@ class GameStepper implements ActionListener, ChangeListener {
         } else {
             synchronized (_count) {
                 _count.add();
-                if (_count.getNum() > 2000 / min_interval) {
+                if (_count.getNum() > GameConstant.client_patience / min_interval) {
                     JOptionPane.showMessageDialog(_main, "连接已断开，请重新连接");
                     _main.gameOver();
                 }

@@ -1,6 +1,7 @@
+import game_data.GameConstant;
 import game_data.GameData;
 import game_data.MapEle;
-import imageio.SVGImageReader;
+import imageio.ImageManager;
 
 import javafx.scene.media.AudioClip;
 
@@ -14,9 +15,9 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import javax.imageio.stream.FileImageInputStream;
 import javax.swing.*;
 
+// The main class
 public class GameMain extends JFrame {
     // The UI of the game
     public MainUI ui;
@@ -24,15 +25,18 @@ public class GameMain extends JFrame {
     JPanel game_panel, statistics;
     MaskLayer maskLayer;
     // The UI of the start
-    JPanel start_ui;
-    NetUI net_ui;
-    JLabel connect_label;
+    private JPanel start_ui;
+    private NetUI net_ui;
+    private JLabel connect_label;
     // The setting of the game
     public GameData data;
     GameStepper stepper;
-    AbstractAction pauseAction, continueAction, stopAction, musicAction, startAction;
+    private AbstractAction pauseAction;
+    private AbstractAction continueAction;
+    private AbstractAction musicAction;
+    private AbstractAction startAction;
     JSlider speed_slider;
-    public int is_pause = 2;
+    int is_pause = 2;
     // 龙虎榜记录
     private int[] _records = new int[5];
     // 网络通信
@@ -41,23 +45,24 @@ public class GameMain extends JFrame {
     private boolean _is_connecting = false;
     private ConnectThread connectThread;
 
+    // The component for chat UI
+    JTextArea chat_text;
+    private JTextField text_input;
+    JScrollPane chat_scroll;
+
     public boolean is_server_mode() {
         return _server_mode;
     }
-
-    // The component for chat UI
-    JTextArea chat_text;
-    JTextField text_input;
-    JScrollPane chat_scroll;
 
     private boolean _server_mode;
     final ArrayList<byte[]> sendBuffer = new ArrayList<>();
     final ServerListener serverListener = new ServerListener(this);
     final ClientListener clientListener = new ClientListener(this);
-    SendThread sendThread;
-    ReceiveThread receiveThread;
+    private SendThread sendThread;
+    private ReceiveThread receiveThread;
 
 
+    // Start Button on the startUI
     class StartAction extends AbstractAction {
         StartAction(Image icon) {
             super("", new ImageIcon(icon));
@@ -80,6 +85,7 @@ public class GameMain extends JFrame {
         }
     }
 
+    // Four Actions on the ToolBar
     class PauseAction extends AbstractAction {
 
         PauseAction(Image icon) {
@@ -188,18 +194,16 @@ public class GameMain extends JFrame {
         super("Snake");
 
         // Initialize the Game
+        ImageManager.initImage();
         data = new GameData();
         ui = new MainUI(data);
         stepper = new GameStepper(this);
         initGame();
         loadRecord();
 
+        // Set the start UI
         start_ui = new StartUI(this);
-        try {
-            startAction = new StartAction(SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/play_option.svg"))));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        startAction = new StartAction(ImageManager.play_option);
         JButton start_button = new JButton(startAction);
         start_button.setFocusable(false);
         start_button.setContentAreaFilled(false);
@@ -227,7 +231,7 @@ public class GameMain extends JFrame {
         start_ui.add(start_button);
         start_ui.add(net_ui);
 
-
+        //Set the UI for game
         game_panel = new JPanel();
         game_panel.setLayout(new BorderLayout());
         ui.setLayout(new BorderLayout());
@@ -245,13 +249,11 @@ public class GameMain extends JFrame {
         toolBar.add(speed_slider);
 
         // The action buttons
-        try {
-            pauseAction = new PauseAction(SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/pause.svg"))));
-            continueAction = new ContinueAction(SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/stop.svg"))));
-            stopAction = new StopAction(SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/home.svg"))));
-            musicAction = new MusicAction(SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/music.svg"))));
-        } catch (IOException e) {
-        }
+        pauseAction = new PauseAction(ImageManager.pause_button);
+        continueAction = new ContinueAction(ImageManager.play_button);
+        AbstractAction stopAction = new StopAction(ImageManager.home_button);
+        musicAction = new MusicAction(ImageManager.music_button);
+
         toolBar.add(pauseAction).setFocusable(false);
         toolBar.add(continueAction).setFocusable(false);
         pauseAction.setEnabled(true);
@@ -301,15 +303,16 @@ public class GameMain extends JFrame {
         toolBar.addKeyListener(key_controller);
         speed_slider.addKeyListener(key_controller);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(750, 750);
+        setMinimumSize(new Dimension(400, 400));
         setVisible(true);
     }
 
-
+    // 初始化游戏数据
     void initGame() {
-        for (int i = 0; i < GameData.MAP_WIDTH; i++) {
-            for (int j = 0; j < GameData.MAP_HEIGHT; j++) {
+        for (int i = 0; i < GameConstant.map_width; i++) {
+            for (int j = 0; j < GameConstant.map_height; j++) {
                 data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null), i, j);
             }
         }
@@ -338,9 +341,11 @@ public class GameMain extends JFrame {
         ui.repaint();
     }
 
+    // 结束游戏
     void gameOver() {
+        // 防止还有未发送完成的消息导致客户端没有顺利结束
         synchronized (sendBuffer) {
-            if(sendBuffer.isEmpty()){
+            if (sendBuffer.isEmpty()) {
                 stopCommunicate();
             }
         }
@@ -361,8 +366,9 @@ public class GameMain extends JFrame {
         validate();
     }
 
+    // 关闭收发线程
     void stopCommunicate() {
-        synchronized (sendBuffer){
+        synchronized (sendBuffer) {
             sendBuffer.clear();
         }
         if (sendThread != null) {
@@ -375,6 +381,7 @@ public class GameMain extends JFrame {
         }
     }
 
+    // 断开连接
     void disconnectGame() {
         stopCommunicate();
         if (_socket != null) {
@@ -388,8 +395,8 @@ public class GameMain extends JFrame {
         }
     }
 
-
-    boolean connectGame() {
+    // 尝试进行连接
+    private boolean connectGame() {
         try {
             disconnectGame();
             int port = Integer.parseInt(net_ui.port_field.getText());
@@ -412,13 +419,15 @@ public class GameMain extends JFrame {
         }
     }
 
-    void connectError(Exception e) {
+    // 连接时发生错误
+    private void connectError(Exception e) {
         JOptionPane.showMessageDialog(this, e.getMessage() + "\n连接失败，请重试");
         connect_label.setText("当前无连接，点击Play按钮连接");
         _is_connecting = false;
     }
 
-    void startGame() {
+    // 连接成功，开始进入游戏
+    private void startGame() {
         _is_connecting = false;
         connect_label.setText("当前无连接，点击Play按钮连接");
         chat_text.setText("");
@@ -447,7 +456,7 @@ public class GameMain extends JFrame {
     }
 
     // 实现龙虎榜功能
-    void loadRecord() {
+    private void loadRecord() {
         File file = new File("record.txt");
         if (file.exists()) {
             try {
@@ -467,7 +476,7 @@ public class GameMain extends JFrame {
         }
     }
 
-    void saveRecord() {
+    private void saveRecord() {
         // update the record
         int my_record = data.scores[0];
         for (int i = 0; i < 5; i++) {
@@ -494,6 +503,7 @@ public class GameMain extends JFrame {
 
     }
 
+    // 用于进行连接的线程
     class ConnectThread extends Thread {
         public volatile boolean exit = false;
         private InetAddress _addr;

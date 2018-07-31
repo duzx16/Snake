@@ -2,7 +2,6 @@ import game_data.Dir;
 import game_data.Food;
 import game_data.Hole;
 import game_data.Point;
-import socket.DataListener;
 import socket.NumberUtil;
 
 import javax.swing.*;
@@ -165,7 +164,7 @@ public class ServerListener extends GameListener {
         initData();
     }
 
-    void initData() {
+    private void initData() {
         snake_holes[0] = snake_holes[1] = -1;
         snake_dirs[0] = snake_dirs[1] = Dir.NULL;
     }

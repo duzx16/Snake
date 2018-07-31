@@ -26,15 +26,15 @@ public class Point {
 
     public void bound() {
         if (x < 0) {
-            x += GameData.MAP_WIDTH;
+            x += GameConstant.map_width;
         } else {
-            x = x % GameData.MAP_WIDTH;
+            x = x % GameConstant.map_width;
         }
 
         if (y < 0) {
-            y += GameData.MAP_HEIGHT;
+            y += GameConstant.map_height;
         } else {
-            y = y % GameData.MAP_HEIGHT;
+            y = y % GameConstant.map_height;
         }
     }
 

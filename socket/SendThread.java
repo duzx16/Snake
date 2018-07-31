@@ -36,19 +36,15 @@ public class SendThread extends Thread {
                     }
                 }
                 _data = _buffer.remove(0);
-                while (!exit) {
-                    try {
-                        _writer.write(NumberUtil.intToByte4(_data.length));
-                        _writer.write(NumberUtil.intToByte4(0));
-                        _writer.write(_data);
-                        _writer.flush();
-                        break;
-                    } catch (IOException error) {
-                        if (!exit) {
-                            exit = true;
-                            _listener.connectStop(error);
-                        }
-                        break;
+                try {
+                    _writer.write(NumberUtil.intToByte4(_data.length));
+                    _writer.write(NumberUtil.intToByte4(0));
+                    _writer.write(_data);
+                    _writer.flush();
+                } catch (IOException error) {
+                    if (!exit) {
+                        exit = true;
+                        _listener.connectStop(error);
                     }
                 }
             }

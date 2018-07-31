@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class GameData {
-    public static final int MAP_WIDTH = 30, MAP_HEIGHT = 30;
     public Snake[] snakes = {new Snake(), new Snake()};
     public ArrayList<Food> foods = new ArrayList<>();
     public ArrayList<ArrayList<Point>> walls = new ArrayList<>();
