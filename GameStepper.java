@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 class GameStepper implements ActionListener, ChangeListener {
     private GameMain _main;
-    final Counter _count = new Counter();
+    final Counter _count = new Counter(), connect_counter = new Counter();
     private int plus_count = 0;
     private int _food_wait = 0;
 
@@ -20,7 +20,7 @@ class GameStepper implements ActionListener, ChangeListener {
         this._speed = speed;
     }
 
-    private int _speed = 10;
+    private int _speed = GameConstants.max_speed / GameConstants.default_speed;
     private Timer _timer;
 
     public GameStepper(GameMain main) {
@@ -103,10 +103,18 @@ class GameStepper implements ActionListener, ChangeListener {
         } else {
             synchronized (_count) {
                 _count.add();
-                if (_count.getNum() > GameConstants.client_patience / min_interval) {
-                    JOptionPane.showMessageDialog(_main, "连接已断开，请重新连接");
-                    _main.gameOver();
+                if (_count.getNum() >= 5) {
+                    _count.clear();
+                    _main.clientListener.sendNull();
                 }
+            }
+        }
+        synchronized (connect_counter) {
+            connect_counter.add();
+            if (connect_counter.getNum() > GameConstants.client_patience / min_interval) {
+                JOptionPane.showMessageDialog(_main, "连接已断开，请重新连接");
+                _main.disconnectGame();
+                _main.gameOver();
             }
         }
     }

@@ -24,6 +24,10 @@ public class ClientListener extends GameListener {
         send(output.toByteArray());
     }
 
+    public void sendNull() {
+        send(NumberUtil.intToByte4(MessageType.Null.ordinal()));
+    }
+
     public void sendContinue() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -88,8 +92,8 @@ public class ClientListener extends GameListener {
                 });
                 break;
             case Process:
-                synchronized (_parent.stepper._count) {
-                    _parent.stepper._count.clear();
+                synchronized (_parent.stepper.connect_counter) {
+                    _parent.stepper.connect_counter.clear();
                 }
                 _parent.data.lock.writeLock().lock();
                 for (int i = 0; i < 2; i++) {

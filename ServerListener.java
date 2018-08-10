@@ -48,6 +48,9 @@ public class ServerListener extends GameListener {
         if (data.length < 4) {
             return;
         }
+        synchronized (_parent.stepper.connect_counter){
+            _parent.stepper.connect_counter.clear();
+        }
         NumberUtil input = new NumberUtil(data);
         MessageType data_type = MessageType.values()[input.nextInt()];
         switch (data_type) {

@@ -3,7 +3,7 @@ import socket.DataListener;
 import javax.swing.*;
 import java.io.IOException;
 
-enum MessageType {Message, Process, InitData, DirData, Pause, Speed}
+enum MessageType {Message, Process, InitData, DirData, Pause, Speed, Null}
 
 public class GameListener implements DataListener {
     volatile boolean listening = true;
