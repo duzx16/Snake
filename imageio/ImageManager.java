@@ -7,14 +7,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class ImageManager {
-    public static Image background_image, hole_image, stone_image;
+    public static Image game_background, hole_image, stone_image;
+    public static Image start_background;
     public static Image[] wall_edges = new Image[4], wall_middles = new Image[4], wall_trans = new Image[4];
     public static BufferedImage[][] snake_heads = new BufferedImage[2][4], snake_tails = new BufferedImage[2][4], snake_middles = new BufferedImage[2][4], snake_trans = new BufferedImage[2][4];
     public static Image[] food_images = new Image[5];
     public static Image play_option, pause_button, play_button, home_button, music_button;
     public static void initImage() {
         try {
-            background_image = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/green_back.svg")));
+            game_background = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/green_back.svg")));
             BufferedImage _wall_edge = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/grass_edge.svg")));
             BufferedImage _wall_middle = SVGImageReader.svgToBufferedImage(new FileImageInputStream((new File("shape/grass_middle.svg"))));
             BufferedImage _wall_tran = SVGImageReader.svgToBufferedImage(new FileImageInputStream((new File("shape/grass_tran.svg"))));
@@ -47,6 +48,7 @@ public class ImageManager {
             play_button = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/play_button.svg")));
             home_button = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/home.svg")));
             music_button = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/music.svg")));
+            start_background = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/start_ui.svg")));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

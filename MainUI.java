@@ -21,7 +21,7 @@ public class MainUI extends JPanel {
         _data.lock.readLock().lock();
         unit_x = (double) getWidth() / GameConstants.map_width;
         unit_y = (double) getHeight() / GameConstants.map_height;
-        g.drawImage(ImageManager.background_image, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(ImageManager.game_background, 0, 0, getWidth(), getHeight(), null);
         paintWalls(_data.walls, g);
         paintFoods(_data.foods, g);
         paintHoles(_data.holes, g);
