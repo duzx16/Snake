@@ -109,7 +109,7 @@ public class MainUI extends JPanel {
         }
     }
 
-    void paintSnake(int index, Graphics g) {
+    private void paintSnake(int index, Graphics g) {
         Snake snake = _data.snakes[index];
         if (snake.state == Snake.State.IN || snake.state == Snake.State.DEAD) {
             return;

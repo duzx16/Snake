@@ -310,16 +310,16 @@ public class GameMain extends JFrame {
     }
 
     // 初始化游戏数据
-    void initGame() {
+    private void initGame() {
         for (int i = 0; i < GameConstants.map_width; i++) {
             for (int j = 0; j < GameConstants.map_height; j++) {
                 data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null, false, false), i, j);
             }
         }
-        GameLogic.initWalls(data.map, data.walls, 2);
-        GameLogic.addFoods(data.map, data.foods, 2);
-        GameLogic.initHoles(data.map, data.holes, 4);
-        GameLogic.initStones(data.map, data.stones, 5);
+        GameLogic.initWalls(data.map, data.walls);
+        GameLogic.addFoods(data.map, data.foods);
+        GameLogic.initHoles(data.map, data.holes);
+        GameLogic.initStones(data.map, data.stones);
         GameLogic.initSnake(0, data);
         GameLogic.initSnake(1, data);
         data.snake_nums[0] = data.snake_nums[1] = GameConstants.init_snakes;
@@ -367,7 +367,7 @@ public class GameMain extends JFrame {
     }
 
     // 关闭收发线程
-    void stopCommunicate() {
+    private void stopCommunicate() {
         synchronized (sendBuffer) {
             sendBuffer.clear();
         }

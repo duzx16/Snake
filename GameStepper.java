@@ -95,7 +95,7 @@ class GameStepper implements ActionListener, ChangeListener {
                     _food_wait += 1;
                     if (_food_wait == food_wait_total) {
                         _food_wait = 0;
-                        GameLogic.addFoods(_main.data.map, _main.data.foods, 2);
+                        GameLogic.addFoods(_main.data.map, _main.data.foods);
                     }
                 }
                 _main.data.lock.writeLock().unlock();

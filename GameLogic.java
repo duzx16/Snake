@@ -54,7 +54,7 @@ class GameLogic {
         return new Point(x, y);
     }
 
-    static Dir randomDir(GameMap map, Point pos, Point last_dir) {
+    private static Dir randomDir(GameMap map, Point pos, Point last_dir) {
         Dir[] choices = new Dir[4];
         int n = 0;
         for (int i = 0; i < 4; i++) {
@@ -82,9 +82,9 @@ class GameLogic {
         return choice;
     }
 
-    static void initWalls(GameMap map, ArrayList<ArrayList<Point>> walls, int num) {
+    static void initWalls(GameMap map, ArrayList<ArrayList<Point>> walls) {
         walls.clear();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < GameConstants.wall_num; i++) {
             ArrayList<Point> wall = new ArrayList<>();
             Point dir = new Point(0, 0), pos = randomSpare(map);
             wall.add(pos);
@@ -106,9 +106,9 @@ class GameLogic {
         }
     }
 
-    static void addFoods(GameMap map, ArrayList<Food> foods, int num) {
+    static void addFoods(GameMap map, ArrayList<Food> foods) {
         foods.clear();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < GameConstants.food_num; i++) {
             Point pos = randomSpare(map);
             while (!neighborSpare(map, pos)) {
                 pos = randomSpare(map);
@@ -121,9 +121,9 @@ class GameLogic {
         }
     }
 
-    static void initHoles(GameMap map, ArrayList<Hole> holes, int num) {
+    static void initHoles(GameMap map, ArrayList<Hole> holes) {
         holes.clear();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < GameConstants.hole_num; i++) {
             Point pos = randomSpare(map);
             while (!neighborSpare(map, pos) || pos.x == 0 || pos.x == GameConstants.map_width - 1 || pos.y == 0 || pos.y == GameConstants.map_height - 1) {
                 pos = randomSpare(map);
@@ -135,9 +135,9 @@ class GameLogic {
         }
     }
 
-    static void initStones(GameMap map, ArrayList<Point> stones, int num) {
+    static void initStones(GameMap map, ArrayList<Point> stones) {
         stones.clear();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < GameConstants.stone_num; i++) {
             Point pos = randomSpare(map);
             while (!neighborSpare(map, pos)) {
                 pos = randomSpare(map);
@@ -148,7 +148,7 @@ class GameLogic {
         }
     }
 
-    static void cutTail(GameData data, int index) {
+    private static void cutTail(GameData data, int index) {
         Snake snake = data.snakes[index];
         MapEle tail_ele = data.map.elementAt(snake.tail);
         tail_ele.on_snakes[index] = false;
