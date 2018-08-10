@@ -313,7 +313,7 @@ public class GameMain extends JFrame {
     void initGame() {
         for (int i = 0; i < GameConstants.map_width; i++) {
             for (int j = 0; j < GameConstants.map_height; j++) {
-                data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null), i, j);
+                data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null, false, false), i, j);
             }
         }
         GameLogic.initWalls(data.map, data.walls, 2);

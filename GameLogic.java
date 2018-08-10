@@ -19,10 +19,8 @@ class GameLogic {
         Snake snake = data.snakes[index];
         Point pos = snake.body.elementAt(0);
         for (int i = 1; i <= snake.body.size(); i++) {
-            if (data.map.elementAt(pos).type == MapEle.EleType.SNAKE) {
-                data.map.elementAt(pos).type = MapEle.EleType.NULL;
-                data.map.elementAt(pos).obj = null;
-            } else if (data.map.elementAt(pos).type == MapEle.EleType.HOLE) {
+            data.map.elementAt(pos).on_snakes[index] = false;
+            if (data.map.elementAt(pos).type == MapEle.EleType.HOLE) {
                 ((Hole) data.map.elementAt(pos).obj).used = false;
             }
             if (i < snake.body.size()) {
@@ -49,7 +47,7 @@ class GameLogic {
 
     private static Point randomSpare(GameMap map) {
         int x = _random.nextInt(GameConstants.map_width), y = _random.nextInt(GameConstants.map_height);
-        while (map.elementAt(x, y).type != MapEle.EleType.NULL) {
+        while (map.elementAt(x, y).type != MapEle.EleType.NULL || map.elementAt(x, y).on_snakes[0] || map.elementAt(x, y).on_snakes[1]) {
             x = _random.nextInt(GameConstants.map_width);
             y = _random.nextInt(GameConstants.map_height);
         }
@@ -62,16 +60,18 @@ class GameLogic {
         for (int i = 0; i < 4; i++) {
             if (!_dir_pos[i].equalTo(last_dir)) {
                 Point new_pos = pos.add(_dir_pos[i]);
-                if (new_pos.x >= 0 && new_pos.x < GameConstants.map_width && new_pos.y >= 0 && new_pos.y < GameConstants.map_height && (map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD)) {
-                    choices[n] = Dir.values()[i];
-                    n++;
+                if (new_pos.x >= 0 && new_pos.x < GameConstants.map_width && new_pos.y >= 0 && new_pos.y < GameConstants.map_height) {
+                    if((map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD) && !map.elementAt(new_pos).hasSnake())
+                    {
+                        choices[n] = Dir.values()[i];
+                        n++;
+                    }
                 }
             }
         }
         if (n > 0)
             return choices[_random.nextInt(n)];
-        else
-            return null;
+        return null;
     }
 
     static int randomHole(ArrayList<Hole> holes) {
@@ -148,14 +148,14 @@ class GameLogic {
         }
     }
 
-    static void cutTail(GameMap map, Snake snake) {
-        if (map.elementAt(snake.tail).type == MapEle.EleType.SNAKE && map.elementAt(snake.tail).obj == snake) {
-            map.elementAt(snake.tail).type = MapEle.EleType.NULL;
-            map.elementAt(snake.tail).obj = null;
-        } else if (map.elementAt(snake.tail).type == MapEle.EleType.HOLE) {
+    static void cutTail(GameData data, int index) {
+        Snake snake = data.snakes[index];
+        MapEle tail_ele = data.map.elementAt(snake.tail);
+        tail_ele.on_snakes[index] = false;
+        if (tail_ele.type == MapEle.EleType.HOLE) {
             Point last = snake.body.elementAt(snake.body.size() - 1);
             if (last.x != 0 || last.y != 0) {
-                ((Hole) map.elementAt(snake.tail).obj).used = false;
+                ((Hole) tail_ele.obj).used = false;
             }
         }
         snake.tail = snake.tail.sub(snake.body.elementAt(snake.size() - 1));
@@ -180,14 +180,15 @@ class GameLogic {
                             }
                             snake.body.addFirst(head_pos);
                             snake.body.setElementAt(_dir_pos[dir.ordinal()].minus(), 1);
-                            data.map.elementAt(head_pos).type = MapEle.EleType.SNAKE;
-                            data.map.elementAt(head_pos).obj = snake;
+                            data.map.elementAt(head_pos).type = MapEle.EleType.NULL;
+                            data.map.elementAt(head_pos).obj = null;
+                            data.map.elementAt(head_pos).on_snakes[index] = true;
                             data.scores[index] += 1;
                             _parent.maskLayer.addPlusOne(head_pos);
                             break;
                         case WALL:
                         case STONE:
-                            killSnake(index, data);
+                            snake.state = Snake.State.DEAD;
                             break;
                         case HOLE:
                             if (((Hole) data.map.elementAt(head_pos).obj).used) {
@@ -198,52 +199,24 @@ class GameLogic {
                                 snake.length = snake.body.size();
                                 snake.body.addFirst(head_pos);
                                 snake.body.setElementAt(_dir_pos[dir.ordinal()].minus(), 1);
-                                cutTail(data.map, snake);
+                                cutTail(data, index);
                             }
                             break;
-                        case SNAKE:
-                            Snake hit_snake = (Snake) data.map.elementAt(head_pos).obj;
-                            if (hit_snake.tail.equalTo(head_pos) && !hit_snake.moved) {
-                                Dir hit_dir;
-                                if (hit_snake == data.snakes[0])
-                                    hit_dir = data.dirs[0];
-                                else
-                                    hit_dir = data.dirs[1];
-                                Point other_head = hit_snake.body.elementAt(0).add(_dir_pos[hit_dir.ordinal()]);
-                                other_head.bound();
-                                if (hit_snake.state == Snake.State.FREE && data.map.elementAt(other_head).type == MapEle.EleType.FOOD) {
-                                    killSnake(index, data);
-                                    break;
-                                }
-                            } else if (hit_snake.body.elementAt(0).equalTo(head_pos)) {
-                                if (hit_snake.moved) {
-                                    killSnake(0, data);
-                                    killSnake(1, data);
-                                } else {
-                                    killSnake(index, data);
-                                }
-                                break;
-                            } else {
-                                killSnake(index, data);
-                                break;
-                            }
                         case NULL:
-                            snake.body.addFirst(head_pos);
-                            snake.body.setElementAt(_dir_pos[dir.ordinal()].minus(), 1);
-                            cutTail(data.map, snake);
-                            data.map.elementAt(head_pos).type = MapEle.EleType.SNAKE;
-                            data.map.elementAt(head_pos).obj = snake;
+                            if (data.map.elementAt(head_pos).on_snakes[index] && !head_pos.equalTo(snake.tail)) {
+                                snake.state = Snake.State.DEAD;
+                            } else {
+                                snake.body.addFirst(head_pos);
+                                snake.body.setElementAt(_dir_pos[dir.ordinal()].minus(), 1);
+                                cutTail(data, index);
+                                data.map.elementAt(head_pos).on_snakes[index] = true;
+                            }
+
                             break;
                     }
                     break;
                 case ENTER:
-                    if (data.map.elementAt(snake.tail).type == MapEle.EleType.SNAKE && data.map.elementAt(snake.tail).obj == snake) {
-                        data.map.elementAt(snake.tail).type = MapEle.EleType.NULL;
-                        data.map.elementAt(snake.tail).obj = null;
-                    }
-                    snake.tail = snake.tail.sub(snake.body.elementAt(snake.size() - 1));
-                    snake.tail.bound();
-                    snake.body.removeLast();
+                    cutTail(data, index);
                     if (snake.body.size() == 1) {
                         ((Hole) (data.map.elementAt(snake.body.elementAt(0)).obj)).used = false;
                         snake.hole_wait = 0;
@@ -251,10 +224,22 @@ class GameLogic {
                     }
                     break;
             }
-
         }
-        snake.moved = true;
     }
+
+
+    static void snakeCrash(GameData data) {
+        for (int index = 0; index < 2; index++) {
+            int other = (index + 1) % 2;
+            if (data.snakes[index].body.size() > 0) {
+                Point head_pos = data.snakes[index].body.elementAt(0);
+                if (data.map.elementAt(head_pos).on_snakes[other]) {
+                    data.snakes[index].state = Snake.State.DEAD;
+                }
+            }
+        }
+    }
+
 
     static void snakeOut(int index, GameData data, Hole hole) {
         data.snakes[index].body.clear();

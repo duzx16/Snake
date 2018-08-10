@@ -7,7 +7,6 @@ import game_data.Point;
 import imageio.ImageManager;
 
 
-
 public class MainUI extends JPanel {
     private GameData _data;
     double unit_x, unit_y;
@@ -112,6 +111,9 @@ public class MainUI extends JPanel {
 
     void paintSnake(int index, Graphics g) {
         Snake snake = _data.snakes[index];
+        if (snake.state == Snake.State.IN || snake.state == Snake.State.DEAD) {
+            return;
+        }
         Point dir, old_dir = new Point(), pos = snake.body.elementAt(0);
         for (int i = 1; i <= snake.body.size(); i++) {
             if (i == snake.body.size()) {
@@ -121,20 +123,19 @@ public class MainUI extends JPanel {
             }
             int ui_x = (int) (pos.x * unit_x) - 1, ui_y = (int) (pos.y * unit_y) - 1;
             if (i == 1) {
-                if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
+                if (_data.map.elementAt(pos).on_snakes[index])
                     g.drawImage(ImageManager.snake_heads[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
                 pos = pos.add(snake.body.elementAt(i));
             } else if (i == snake.body.size()) {
-                if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
+                if (_data.map.elementAt(pos).on_snakes[index])
                     g.drawImage(ImageManager.snake_tails[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
             } else {
                 if (dir.equalTo(old_dir)) {
-                    if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE)
+                    if (_data.map.elementAt(pos).on_snakes[index])
                         g.drawImage(ImageManager.snake_middles[index][dirToAngle(dir)], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
                 } else {
-                    if (_data.map.elementAt(pos).type == MapEle.EleType.SNAKE) {
+                    if (_data.map.elementAt(pos).on_snakes[index])
                         g.drawImage(ImageManager.snake_trans[index][dirToAngle(dir.sub(old_dir))], ui_x, ui_y, (int) unit_x + 2, (int) unit_y + 2, null);
-                    }
                 }
                 pos = pos.add(snake.body.elementAt(i));
             }

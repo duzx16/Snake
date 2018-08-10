@@ -102,11 +102,16 @@ public class ClientListener extends GameListener {
                         GameLogic.snakeOut(i, _parent.data, _parent.data.holes.get(selected));
                     }
                 }
-                _parent.data.snakes[0].moved = _parent.data.snakes[1].moved = false;
                 for (int i = 0; i < 2; i++) {
                     Dir dir = Dir.values()[input.nextInt()];
                     if (dir != Dir.NULL) {
                         GameLogic.snakeStep(i, _parent.data, dir);
+                    }
+                }
+                GameLogic.snakeCrash(_parent.data);
+                for (int i = 0; i < 2; i++) {
+                    if (_parent.data.snakes[i].state == Snake.State.DEAD) {
+                        GameLogic.killSnake(i, _parent.data);
                     }
                 }
                 _parent.data.foods.clear();
@@ -137,7 +142,7 @@ public class ClientListener extends GameListener {
                 _parent.data.lock.writeLock().lock();
                 for (int i = 0; i < GameConstants.map_width; i++) {
                     for (int j = 0; j < GameConstants.map_height; j++) {
-                        _parent.data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null), i, j);
+                        _parent.data.map.setElementAt(new MapEle(MapEle.EleType.NULL, null, false, false), i, j);
                     }
                 }
                 _parent.data.walls.clear();

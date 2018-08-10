@@ -56,7 +56,6 @@ class GameStepper implements ActionListener, ChangeListener {
         if (_main.is_server_mode()) {
             if (_count.getNum() % GameConstants.min_game_interval == 0) {
                 _main.data.lock.writeLock().lock();
-                _main.data.snakes[0].moved = _main.data.snakes[1].moved = false;
                 for (int i = 0; i < 2; i++) {
                     if (!_main.data.is_lives[i]) {
                         continue;
@@ -74,9 +73,17 @@ class GameStepper implements ActionListener, ChangeListener {
                         }
                     }
                     if (_count.getNum() / GameConstants.min_game_interval % _speed == 0) {
-                        _count.clear();
                         GameLogic.snakeStep(i, _main.data, _main.data.dirs[i]);
                         _main.serverListener.snake_dirs[i] = _main.data.dirs[i];
+                    }
+                }
+                if (_count.getNum() / GameConstants.min_game_interval % _speed == 0) {
+                    _count.clear();
+                    GameLogic.snakeCrash(_main.data);
+                }
+                for (int i = 0; i < 2; i++) {
+                    if (_main.data.snakes[i].state == Snake.State.DEAD) {
+                        GameLogic.killSnake(i, _main.data);
                     }
                 }
                 for (int i = 0; i < 2; i++) {
