@@ -202,7 +202,7 @@ public class GameMain extends JFrame {
         loadRecord();
 
         // Set the start UI
-        start_ui = new StartUI(this);
+        start_ui = new BackgroundPanel(ImageManager.start_background);
         startAction = new StartAction(ImageManager.play_option);
         JButton start_button = new JButton(startAction);
         start_button.setFocusable(false);
@@ -322,7 +322,7 @@ public class GameMain extends JFrame {
         GameLogic.initStones(data.map, data.stones, 5);
         GameLogic.initSnake(0, data);
         GameLogic.initSnake(1, data);
-        data.snake_nums[0] = data.snake_nums[1] = 20;
+        data.snake_nums[0] = data.snake_nums[1] = GameConstants.init_snakes;
         data.scores[0] = data.scores[1] = 0;
         data.is_lives[0] = data.is_lives[1] = true;
     }
@@ -346,7 +346,7 @@ public class GameMain extends JFrame {
         // 防止还有未发送完成的消息导致客户端没有顺利结束
         synchronized (sendBuffer) {
             if (sendBuffer.isEmpty()) {
-                stopCommunicate();
+                disconnectGame();
             }
         }
         stepper.stepPause();
@@ -452,6 +452,7 @@ public class GameMain extends JFrame {
 
         }
         stepper._count.clear();
+        stepper.connect_counter.clear();
         stepper.stepStart();
     }
 

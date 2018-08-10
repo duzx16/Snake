@@ -8,6 +8,7 @@ public class GameConstants {
     public static final int max_speed = 16, min_speed = 2, default_speed = 12;
     public static final int food_wait = 2000;
     public static final int hole_wait = 2000;
+    public static final int init_snakes = 20;
     // The connect setting
     public static final int client_patience = 2000;
     // The animation setting
