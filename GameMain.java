@@ -163,13 +163,10 @@ public class GameMain extends JFrame {
         MusicAction(Image icon) {
             super("Music", new ImageIcon(icon));
             _fileChooser = new JFileChooser(".");
-            try {
-                _music = new AudioClip(new File("sound/background.mp3").toURI().toURL().toString());
-                _music.setCycleCount(AudioClip.INDEFINITE);
-                _music.play();
-            } catch (MalformedURLException error) {
-                System.out.println(error.getMessage());
-            }
+            //_music = new AudioClip(new File("sound/background.mp3").toURI().toURL().toString());
+            _music = new AudioClip(GameMain.this.getClass().getResource("sound/background.mp3").toString());
+            _music.setCycleCount(AudioClip.INDEFINITE);
+            _music.play();
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -197,7 +194,7 @@ public class GameMain extends JFrame {
         super("Snake");
 
         // Initialize the Game
-        ImageManager.initImage();
+        ImageManager.initImage(this.getClass());
         data = new GameData();
         ui = new MainUI(data);
         stepper = new GameStepper(this);
