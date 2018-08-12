@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class GameConstants {
     // The game setting

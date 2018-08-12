@@ -1,12 +1,13 @@
-import game_data.GameConstants;
-import game_data.Hole;
-import game_data.Snake;
+import gamedata.GameConstants;
+import gamedata.Hole;
+import gamedata.Snake;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 class GameStepper implements ActionListener, ChangeListener {
     private GameMain _main;
@@ -119,9 +120,9 @@ class GameStepper implements ActionListener, ChangeListener {
         synchronized (connect_counter) {
             connect_counter.add();
             if (connect_counter.getNum() > GameConstants.client_patience / min_interval) {
-                JOptionPane.showMessageDialog(_main, "连接已断开，请重新连接");
-                _main.disconnectGame();
-                _main.gameOver();
+                if (_main.is_server_mode()) {
+                    _main.serverListener.connectStop(new IOException());
+                }
             }
         }
     }

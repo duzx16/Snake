@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

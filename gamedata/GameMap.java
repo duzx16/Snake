@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class GameMap {
     private MapEle[][] _map = new MapEle[GameConstants.map_width][GameConstants.map_height];

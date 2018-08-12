@@ -1,4 +1,4 @@
-import game_data.*;
+import gamedata.*;
 import socket.NumberUtil;
 
 import javax.swing.*;

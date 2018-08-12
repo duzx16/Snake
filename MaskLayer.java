@@ -1,8 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 
-import game_data.*;
-import game_data.Point;
+import gamedata.*;
+import gamedata.Point;
 import imageio.ImageManager;
 
 public class MaskLayer extends JPanel {

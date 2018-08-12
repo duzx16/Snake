@@ -1,11 +1,12 @@
-import imageio.ImageManager;
+package gameui;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class BackgroundPanel extends JPanel {
     private Image background;
-    BackgroundPanel(Image img) {
+
+    public BackgroundPanel(Image img) {
         super();
         background = img;
         setBackground(null);

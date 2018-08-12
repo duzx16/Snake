@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public enum Dir {
     UP, DOWN, LEFT, RIGHT, NULL;

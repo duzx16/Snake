@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class MapEle {
     public enum EleType {FOOD, WALL, HOLE, STONE, NULL}

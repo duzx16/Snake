@@ -6,7 +6,7 @@ import java.io.IOException;
 enum MessageType {Message, Process, InitData, DirData, Pause, Speed, Null}
 
 public class GameListener implements DataListener {
-    volatile boolean listening = true;
+    boolean listening = true;
     protected GameMain _parent;
 
     GameListener(GameMain main) {
@@ -26,11 +26,11 @@ public class GameListener implements DataListener {
 
     public synchronized void connectStop(IOException error) {
         if (listening) {
+            listening = false;
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(_parent, "连接中断，游戏结束");
                 _parent.disconnectGame();
                 _parent.gameOver();
-                listening = false;
             });
         }
     }

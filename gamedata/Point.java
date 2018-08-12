@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class Point {
     public int x, y;

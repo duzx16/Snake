@@ -1,4 +1,6 @@
-import game_data.GameData;
+package gameui;
+
+import gamedata.GameData;
 import imageio.SVGImageReader;
 
 import javax.imageio.stream.FileImageInputStream;

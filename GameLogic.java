@@ -1,4 +1,4 @@
-import game_data.*;
+import gamedata.*;
 
 import java.util.Calendar;
 import java.util.Random;

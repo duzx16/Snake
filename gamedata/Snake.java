@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class Snake {
     public enum State {ENTER, IN, FREE, DEAD}

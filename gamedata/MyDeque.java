@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class MyDeque<E> {
     private int _max_len, _length, _start;

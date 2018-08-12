@@ -1,7 +1,7 @@
-import game_data.Dir;
-import game_data.Food;
-import game_data.Hole;
-import game_data.Point;
+import gamedata.Dir;
+import gamedata.Food;
+import gamedata.Hole;
+import gamedata.Point;
 import socket.NumberUtil;
 
 import javax.swing.*;

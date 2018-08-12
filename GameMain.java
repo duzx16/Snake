@@ -1,6 +1,9 @@
-import game_data.GameConstants;
-import game_data.GameData;
-import game_data.MapEle;
+import gamedata.GameConstants;
+import gamedata.GameData;
+import gamedata.MapEle;
+import gameui.BackgroundPanel;
+import gameui.NetUI;
+import gameui.StatisticsUI;
 import imageio.ImageManager;
 
 import javafx.scene.media.AudioClip;

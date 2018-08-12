@@ -2,8 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-import game_data.*;
-import game_data.Point;
+import gamedata.*;
+import gamedata.Point;
 import imageio.ImageManager;
 
 

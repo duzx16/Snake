@@ -1,3 +1,5 @@
+package gameui;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,7 +11,7 @@ public class NetUI extends JPanel implements ActionListener {
     public JRadioButton server_button, client_button;
     public JTextField ip_field, port_field;
 
-    NetUI() {
+    public NetUI() {
         GridLayout layout = new GridLayout(4, 1);
         setLayout(layout);
 

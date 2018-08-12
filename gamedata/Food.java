@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class Food {
     public enum FoodType {Apple, Banana, Cherry, Melon, Orange, NULL}

@@ -1,4 +1,4 @@
-package game_data;
+package gamedata;
 
 public class Hole {
     public Point pos;
