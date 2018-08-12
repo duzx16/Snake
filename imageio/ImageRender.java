@@ -23,7 +23,7 @@ public class ImageRender {
 
     public static BufferedImage inverseImage(BufferedImage imgsrc) {
         try {
-            //创建一个不带透明度的图片
+            //创建一个带透明度的图片
             BufferedImage back = new BufferedImage(imgsrc.getWidth(), imgsrc.getHeight(), BufferedImage.TYPE_INT_ARGB);
             int width = imgsrc.getWidth();
             int height = imgsrc.getHeight();

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 enum MessageType {Message, Process, InitData, DirData, Pause, Speed, Null}
 
+// 完成基本的发送数据和连接错误时的处理
 public class GameListener implements DataListener {
     boolean listening = true;
     protected GameMain _parent;

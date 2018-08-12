@@ -1,4 +1,5 @@
 import gamedata.*;
+import org.apache.batik.gvt.Mask;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -6,11 +7,16 @@ import java.util.ArrayList;
 
 class GameLogic {
     private static Random _random = new Random(Calendar.getInstance().getTimeInMillis());
-    static GameMain _parent;
+    private static MaskLayer _mask;
     static final Point[] _dir_pos = {new Point(0, -1), new Point(0, 1), new Point(-1, 0), new Point(1, 0)};
 
+
+    static void setMask(MaskLayer mask) {
+        _mask = mask;
+    }
+
     static void killSnake(int index, GameData data) {
-        _parent.maskLayer.addDeadSnake(index, data);
+        _mask.addDeadSnake(index, data);
         data.snake_nums[index] -= 1;
         initSnake(index, data);
     }
@@ -54,6 +60,7 @@ class GameLogic {
         return new Point(x, y);
     }
 
+    // 随机选择一个空闲的方向
     private static Dir randomDir(GameMap map, Point pos, Point last_dir) {
         Dir[] choices = new Dir[4];
         int n = 0;
@@ -61,8 +68,7 @@ class GameLogic {
             if (!_dir_pos[i].equalTo(last_dir)) {
                 Point new_pos = pos.add(_dir_pos[i]);
                 if (new_pos.x >= 0 && new_pos.x < GameConstants.map_width && new_pos.y >= 0 && new_pos.y < GameConstants.map_height) {
-                    if((map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD) && !map.elementAt(new_pos).hasSnake())
-                    {
+                    if ((map.elementAt(new_pos).type == MapEle.EleType.NULL || map.elementAt(new_pos).type == MapEle.EleType.FOOD) && !map.elementAt(new_pos).hasSnake()) {
                         choices[n] = Dir.values()[i];
                         n++;
                     }
@@ -74,6 +80,7 @@ class GameLogic {
         return null;
     }
 
+    // 随机选择一个未被占用的洞
     static int randomHole(ArrayList<Hole> holes) {
         int choice = _random.nextInt(holes.size());
         while (holes.get(choice).used) {
@@ -106,6 +113,7 @@ class GameLogic {
         }
     }
 
+    // 在随机位置添加食物
     static void addFoods(GameMap map, ArrayList<Food> foods) {
         foods.clear();
         for (int i = 0; i < GameConstants.food_num; i++) {
@@ -148,6 +156,7 @@ class GameLogic {
         }
     }
 
+    // 去掉蛇的尾巴
     private static void cutTail(GameData data, int index) {
         Snake snake = data.snakes[index];
         MapEle tail_ele = data.map.elementAt(snake.tail);
@@ -163,6 +172,7 @@ class GameLogic {
         snake.body.removeLast();
     }
 
+    // 让index指定的蛇向dir方向移动一步
     static void snakeStep(int index, GameData data, Dir dir) {
         Snake snake = data.snakes[index];
         if (snake.size() > 0) {
@@ -184,7 +194,7 @@ class GameLogic {
                             data.map.elementAt(head_pos).obj = null;
                             data.map.elementAt(head_pos).on_snakes[index] = true;
                             data.scores[index] += 1;
-                            _parent.maskLayer.addPlusOne(head_pos);
+                            _mask.addPlusOne(head_pos);
                             break;
                         case WALL:
                         case STONE:
@@ -227,7 +237,7 @@ class GameLogic {
         }
     }
 
-
+    // 检测两条蛇是否发生了互相碰撞
     static void snakeCrash(GameData data) {
         for (int index = 0; index < 2; index++) {
             int other = (index + 1) % 2;
@@ -240,7 +250,7 @@ class GameLogic {
         }
     }
 
-
+    // 蛇从洞口出来
     static void snakeOut(int index, GameData data, Hole hole) {
         data.snakes[index].body.clear();
         data.snakes[index].state = Snake.State.FREE;

@@ -96,6 +96,7 @@ public class ServerListener extends GameListener {
         }
     }
 
+    // 发送游戏初始化的数据
     void sendInitData() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -140,7 +141,7 @@ public class ServerListener extends GameListener {
 
     }
 
-    void sendData() {
+    void sendProcessData() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             output.write(NumberUtil.intToByte4(MessageType.Process.ordinal()));

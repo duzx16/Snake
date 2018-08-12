@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+// 数据接收线程，使用DataListener来处理接收到的数据
 public class ReceiveThread extends Thread {
-    Socket _socket;
-    InputStream _input;
-    DataListener _listener;
+    private Socket _socket;
+    private InputStream _input;
+    private DataListener _listener;
     public volatile boolean exit = false;
 
     public ReceiveThread(Socket socket, DataListener listener) {

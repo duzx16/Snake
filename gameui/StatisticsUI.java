@@ -1,13 +1,10 @@
 package gameui;
 
 import gamedata.GameData;
-import imageio.SVGImageReader;
+import imageio.ImageManager;
 
-import javax.imageio.stream.FileImageInputStream;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 
 public class StatisticsUI extends JPanel {
     private GameData _data;
@@ -16,11 +13,7 @@ public class StatisticsUI extends JPanel {
     public StatisticsUI(GameData data) {
         _data = data;
         setPreferredSize(new Dimension(650, 60));
-        try {
-            _img = SVGImageReader.svgToBufferedImage(new FileImageInputStream(new File("shape/statistics.svg")));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        _img = ImageManager.statistics_background;
     }
 
     public void paintComponent(Graphics g) {

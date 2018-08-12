@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+// 数据发送线程，使用生产者-消费者模式来发送buffer中的数据
 public class SendThread extends Thread {
     private Socket _socket;
     private OutputStream _writer;

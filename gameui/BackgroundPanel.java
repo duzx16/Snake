@@ -3,6 +3,7 @@ package gameui;
 import javax.swing.*;
 import java.awt.*;
 
+// 能够设置图片的JPanel
 public class BackgroundPanel extends JPanel {
     private Image background;
 

@@ -1,5 +1,6 @@
 package socket;
 
+// 在byte[]和int之间进行转化的工具
 public class NumberUtil {
     public static byte[] intToByte4(int i) {
         byte[] targets = new byte[4];

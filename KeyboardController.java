@@ -3,6 +3,7 @@ import gamedata.Dir;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+// 用于接收WASD和上下左右的键盘事件控制游戏
 public class KeyboardController extends KeyAdapter {
     private GameMain _main;
 

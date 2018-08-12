@@ -237,7 +237,7 @@ public class GameMain extends JFrame {
         ui.setLayout(new BorderLayout());
         maskLayer = new MaskLayer(this);
         maskLayer.setOpaque(false);
-        GameLogic._parent = this;
+        GameLogic.setMask(maskLayer);
         ui.add(maskLayer, BorderLayout.CENTER);
         game_panel.add(ui, BorderLayout.CENTER);
 

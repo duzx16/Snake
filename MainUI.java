@@ -28,14 +28,12 @@ public class MainUI extends JPanel {
         paintSnake(0, g);
         paintSnake(1, g);
 
-//        for (int i = 0; i < GameData.MAP_WIDTH; i++) {
-//            for (int j = 0; j < GameData.MAP_HEIGHT; j++) {
+        // 用于调试的绘制代码
+//        for (int i = 0; i < GameConstants.map_width; i++) {
+//            for (int j = 0; j < GameConstants.map_height; j++) {
 //                g.setColor(Color.BLACK);
-//                g.drawRect((int)(i * unit_x), (int)(j * unit_y), (int)(unit_x), (int)(unit_y));
-//                switch (_data.map.elementAt(i, j).type){
-//                    case SNAKE:
-//                        g.setColor(Color.RED);
-//                        break;
+//                g.drawRect((int) (i * unit_x), (int) (j * unit_y), (int) (unit_x), (int) (unit_y));
+//                switch (_data.map.elementAt(i, j).type) {
 //                    case FOOD:
 //                        g.setColor(Color.GREEN);
 //                        break;
@@ -49,10 +47,16 @@ public class MainUI extends JPanel {
 //                        g.setColor(Color.YELLOW);
 //                        break;
 //                    case NULL:
-//                        g.setColor(Color.WHITE);
+//                        if (_data.map.elementAt(i, j).on_snakes[0]) {
+//                            g.setColor(Color.RED);
+//                        } else if (_data.map.elementAt(i, j).on_snakes[1]) {
+//                            g.setColor(Color.ORANGE);
+//                        } else {
+//                            g.setColor(Color.WHITE);
+//                        }
 //                        break;
 //                }
-//                g.fillRect((int)(i * unit_x), (int)(j * unit_y), (int)(unit_x), (int)(unit_y));
+//                g.fillRect((int) (i * unit_x), (int) (j * unit_y), (int) (unit_x), (int) (unit_y));
 //            }
 //        }
         _data.lock.readLock().unlock();
@@ -81,6 +85,7 @@ public class MainUI extends JPanel {
         return 0;
     }
 
+    // 绘制地图上的草墙
     private void paintWalls(ArrayList<ArrayList<Point>> walls, Graphics g) {
         for (ArrayList<Point> wall :
                 walls) {
@@ -109,6 +114,7 @@ public class MainUI extends JPanel {
         }
     }
 
+    // 绘制蛇
     private void paintSnake(int index, Graphics g) {
         Snake snake = _data.snakes[index];
         if (snake.state == Snake.State.IN || snake.state == Snake.State.DEAD) {
@@ -144,6 +150,7 @@ public class MainUI extends JPanel {
         }
     }
 
+    // 绘制食物
     private void paintFoods(ArrayList<Food> foods, Graphics g) {
         for (Food food :
                 foods) {
@@ -152,6 +159,7 @@ public class MainUI extends JPanel {
         }
     }
 
+    // 在指定的地点绘制图片
     private void paintSingles(ArrayList<Point> singles, Image img, Graphics g) {
         for (Point p :
                 singles) {
@@ -160,6 +168,7 @@ public class MainUI extends JPanel {
         }
     }
 
+    // 绘制洞
     private void paintHoles(ArrayList<Hole> holes, Graphics g) {
         for (Hole h : holes) {
             int ui_x = (int) (h.pos.x * unit_x), ui_y = (int) (h.pos.y * unit_y);

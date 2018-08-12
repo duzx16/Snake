@@ -24,10 +24,12 @@ public class ClientListener extends GameListener {
         send(output.toByteArray());
     }
 
+    // 无意义的数据，表示通信正常进行
     public void sendNull() {
         send(NumberUtil.intToByte4(MessageType.Null.ordinal()));
     }
 
+    // 发送请求游戏暂停的数据
     public void sendContinue() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -39,6 +41,7 @@ public class ClientListener extends GameListener {
         send(output.toByteArray());
     }
 
+    // 发送请求游戏暂停的数据
     public void sendPause() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -50,7 +53,7 @@ public class ClientListener extends GameListener {
         send(output.toByteArray());
     }
 
-
+    // 发送聊天数据
     public void sendChatData(String text) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
@@ -62,6 +65,7 @@ public class ClientListener extends GameListener {
         send(output.toByteArray());
     }
 
+    // 发送蛇方向改变的数据
     public void sendDirData(Dir dir) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {

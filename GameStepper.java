@@ -100,7 +100,7 @@ class GameStepper implements ActionListener, ChangeListener {
                     }
                 }
                 _main.data.lock.writeLock().unlock();
-                _main.serverListener.sendData();
+                _main.serverListener.sendProcessData();
                 _main.statistics.repaint();
                 _main.ui.repaint();
                 if (!_main.data.is_lives[0] || !_main.data.is_lives[1]) {

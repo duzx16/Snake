@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+// 完成网络连接设置的Panel
 public class NetUI extends JPanel implements ActionListener {
     public JRadioButton server_button, client_button;
     public JTextField ip_field, port_field;

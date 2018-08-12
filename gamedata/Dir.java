@@ -3,7 +3,7 @@ package gamedata;
 public enum Dir {
     UP, DOWN, LEFT, RIGHT, NULL;
 
-   public  static Dir fromPoint(Point dir) {
+   public static Dir fromPoint(Point dir) {
         if (dir.x == 0) {
             if (dir.y == -1) {
                 return UP;
