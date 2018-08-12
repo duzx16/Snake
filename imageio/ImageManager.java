@@ -15,15 +15,15 @@ public class ImageManager {
 
     public static void initImage(Class<?> loader) {
         try {
-            game_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/green_back.svg"), null));
-            statistics_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/statistics.svg"), null));
-            BufferedImage _wall_edge = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/grass_edge.svg"), null));
-            BufferedImage _wall_middle = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/grass_middle.svg"), null));
-            BufferedImage _wall_tran = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/grass_tran.svg"), null));
-            BufferedImage _snake_head = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/snake_head.svg"), null));
-            BufferedImage _snake_tail = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/snake_tail.svg"), null));
-            BufferedImage _snake_tran = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/snake_tran.svg"), null));
-            BufferedImage _snake_middle = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/snake_middle.svg"), null));
+            game_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/green_back.svg"), null));
+            statistics_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/statistics.svg"), null));
+            BufferedImage _wall_edge = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/grass_edge.svg"), null));
+            BufferedImage _wall_middle = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/grass_middle.svg"), null));
+            BufferedImage _wall_tran = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/grass_tran.svg"), null));
+            BufferedImage _snake_head = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/snake_head.svg"), null));
+            BufferedImage _snake_tail = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/snake_tail.svg"), null));
+            BufferedImage _snake_tran = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/snake_tran.svg"), null));
+            BufferedImage _snake_middle = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/snake_middle.svg"), null));
             for (int i = 0; i < 4; i++) {
                 wall_edges[i] = ImageRender.rotateImage(_wall_edge, i * 90);
                 wall_trans[i] = ImageRender.rotateImage(_wall_tran, i * 90);
@@ -37,19 +37,19 @@ public class ImageManager {
                 snake_trans[1][i] = ImageRender.inverseImage(snake_trans[0][i]);
                 snake_middles[1][i] = ImageRender.inverseImage(snake_middles[0][i]);
             }
-            food_images[0] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/apple.svg"), null));
-            food_images[1] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/banana.svg"), null));
-            food_images[2] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/cherry.svg"), null));
-            food_images[3] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/melon.svg"), null));
-            food_images[4] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/orange.svg"), null));
-            hole_image = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/hole.svg"), null));
-            stone_image = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/stone.svg"), null));
-            play_option = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/play_option.svg"), null));
-            pause_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/pause_button.svg"), null));
-            play_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/play_button.svg"), null));
-            home_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/home.svg"), null));
-            music_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/music.svg"), null));
-            start_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("shape/start_ui.svg"), null));
+            food_images[0] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/apple.svg"), null));
+            food_images[1] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/banana.svg"), null));
+            food_images[2] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/cherry.svg"), null));
+            food_images[3] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/melon.svg"), null));
+            food_images[4] = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/orange.svg"), null));
+            hole_image = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/hole.svg"), null));
+            stone_image = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/stone.svg"), null));
+            play_option = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/play_option.svg"), null));
+            pause_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/pause_button.svg"), null));
+            play_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/play_button.svg"), null));
+            home_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/home.svg"), null));
+            music_button = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/music.svg"), null));
+            start_background = SVGImageReader.svgToBufferedImage(new FileCacheImageInputStream(loader.getResourceAsStream("/shape/start_ui.svg"), null));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

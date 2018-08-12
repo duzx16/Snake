@@ -1,5 +1,7 @@
+import gamemain.GameMain;
+import imageio.ImageManager;
+
 import javax.swing.*;
-import java.awt.*;
 
 public class Test {
     public static void main(String[] args) {
