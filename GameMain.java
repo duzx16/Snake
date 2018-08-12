@@ -479,7 +479,12 @@ public class GameMain extends JFrame {
 
     private void saveRecord() {
         // update the record
-        int my_record = data.scores[0];
+        int my_record;
+        if (is_server_mode()) {
+            my_record = data.scores[0];
+        } else {
+            my_record = data.scores[1];
+        }
         for (int i = 0; i < 5; i++) {
             if (my_record > _records[i]) {
                 int temp = _records[i];
